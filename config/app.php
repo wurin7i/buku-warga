@@ -159,6 +159,7 @@ return [
         /*
          * Package Service Providers...
          */
+        WuriN7i\IdRefs\ServiceProvider::class,
 
         /*
          * Application Service Providers...

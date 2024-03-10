@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('occupants', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->foreign('id')->references('id')->on('people')
+            $table->id();
+            $table->foreignId('person_id')
+                ->references('id')->on('people')
                 ->cascadeOnDelete();
             $table->foreignId('building_id')->nullable()
                 ->references('id')->on('properties')

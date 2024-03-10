@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AreaResource\RelationManagers;
+namespace App\Filament\Resources\LocaleAreaResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -22,8 +22,7 @@ class ChildrenRelationManager extends RelationManager
                     ->required()->maxLength(255)
                     ->columnSpan(2),
                 Forms\Components\TextInput::make('code')
-                    ->required()->maxLength(10)
-                    ->columnSpan(1),
+                    ->required()->maxLength(16),
             ])->columns(3);
     }
 

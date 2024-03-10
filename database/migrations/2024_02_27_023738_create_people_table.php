@@ -1,13 +1,9 @@
 <?php
 
-use App\Enums\PersonAttributes\BloodType;
-use App\Enums\PersonAttributes\Citizenship;
-use App\Enums\PersonAttributes\Gender;
-use App\Enums\PersonAttributes\Marriage;
-use App\Enums\PersonAttributes\Religion;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use WuriN7i\IdRefs\Enums\ReferenceType;
 
 return new class extends Migration
 {
@@ -18,20 +14,21 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->char('nik', 16)->unique();
+            $table->char('nik', 16)->nullable()->unique();
             $table->char('kk_number', 16)->nullable();
             $table->string('name');
-            $table->enum('gender', Gender::getValues());
+            $table->reference(ReferenceType::Gender);
             $table->string('birth_place')->nullable();
             $table->date('birth_date')->nullable();
-            $table->date('deceased_date')->nullable();
+            $table->boolean('is_deceased')->default(false);
             $table->string('address')->nullable();
-            $table->unsignedBigInteger('region_id')->nullable();
-            $table->enum('religion', Religion::getValues())->nullable();
-            $table->enum('marriage', Marriage::getValues())->nullable();
-            $table->unsignedSmallInteger('occupation')->nullable();
-            $table->enum('blood_type',  BloodType::getValues())->nullable();
-            $table->enum('citizenship', Citizenship::getValues())->nullable();
+            $table->foreignId('region_id')->nullable()
+                ->references('id')->on('ref_regions');
+            $table->reference(ReferenceType::Religion);
+            $table->reference(ReferenceType::Marital);
+            $table->reference(ReferenceType::Occupation);
+            $table->reference(ReferenceType::BloodType);
+            $table->reference(ReferenceType::Citizenship);
             $table->softDeletes();
             $table->timestamps();
         });

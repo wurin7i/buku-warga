@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
             $table->string('label');
-            $table->foreignId('owner_id')->nullable()->references('id')->on('people');
+            $table->foreignId('owner_id')->nullable()
+                ->references('id')->on('people');
             $table->boolean('has_building')->default(true);
-            $table->foreignId('administrative_area_id')->references('id')->on('areas');
-            $table->foreignId('area_id')->nullable()->references('id')->on('areas');
+            $table->foreignId('locale_area_id')
+                ->references('id')->on('areas');
+            $table->foreignId('community_area_id')->nullable()
+                ->references('id')->on('areas');
             $table->softDeletes();
             $table->timestamps();
         });

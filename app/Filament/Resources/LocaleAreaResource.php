@@ -2,24 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AreaResource\Pages;
-use App\Filament\Resources\AreaResource\RelationManagers;
-use App\Filament\Resources\AreaResource\RelationManagers\ChildrenRelationManager;
-use App\Models\Area;
+use App\Filament\Resources\LocaleAreaResource\Pages;
+use App\Filament\Resources\LocaleAreaResource\RelationManagers;
+use App\Filament\Resources\LocaleAreaResource\RelationManagers\ChildrenRelationManager;
+use App\Models\LocaleArea;
 use Filament\Forms\Components as FormComponents;
+use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
+use Filament\Tables;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class AreaResource extends Resource
+class LocaleAreaResource extends Resource
 {
-    protected static ?string $model = Area::class;
+    protected static ?string $model = LocaleArea::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-account-tree-o';
+
+    protected static ?string $navigationGroup = 'Areas';
 
     public static function form(Form $form): Form
     {
@@ -46,7 +50,12 @@ class AreaResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])->groups([
+                Group::make('parent.label')
+                    ->titlePrefixedWithLabel(false)
+            ])
+            ->defaultGroup('parent.label')
+            ->groupingSettingsHidden();
     }
 
     public static function getRelations(): array
@@ -59,9 +68,9 @@ class AreaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAreas::route('/'),
-            'create' => Pages\CreateArea::route('/create'),
-            'edit' => Pages\EditArea::route('/{record}/edit'),
+            'index' => Pages\ListLocaleAreas::route('/'),
+            'create' => Pages\CreateLocaleArea::route('/create'),
+            'edit' => Pages\EditLocaleArea::route('/{record}/edit'),
         ];
     }
 }

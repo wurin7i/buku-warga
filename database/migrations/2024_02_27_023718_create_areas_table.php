@@ -1,7 +1,6 @@
 <?php
 
-use App\Enums\AreaAttributes\Type as AreaType;
-use App\Enums\AreaAttributes\Level;
+use App\Enums\AreaType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,12 +16,18 @@ return new class extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('label');
-            $table->foreignId('parent_id')->nullable()->references('id')->on('areas')
+            $table->foreignId('parent_id')->nullable()
+                ->references('id')->on('areas')
                 ->cascadeOnDelete();
-            $table->foreignId('administrative_area_id')->nullable()->references('id')->on('areas')
+            $table->foreignId('base_area_id')->nullable()
+                ->references('id')->on('areas')
                 ->nullOnDelete();
-            $table->enum('type', AreaType::getValues())->default(AreaType::Administrative);
+            $table->foreignId('region_id')->nullable()
+                ->references('id')->on('ref_regions');
+            $table->enum('type', array_map(fn (AreaType $areaType) => $areaType->value, AreaType::cases()))
+                ->default(AreaType::Locale);
             $table->unsignedTinyInteger('level')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
