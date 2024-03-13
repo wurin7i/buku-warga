@@ -8,6 +8,7 @@ use App\Models\Person;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
@@ -66,8 +67,14 @@ class PersonResource extends Resource
                             ->required(),
                     ])
                     ->native(false),
-                FormComponents\Checkbox::make('is_occupy'),
+                FormComponents\Checkbox::make('is_occupy')
+                    ->afterStateHydrated(function (FormComponents\Checkbox $checkbox) use ($form) {
+                        if ($form->model instanceof Person) {
+                            $checkbox->state($form->model->is_occupy);
+                        }
+                    })->live(),
                 FormComponents\Fieldset::make('Penghuni')
+                    ->hidden(fn (Get $get) => !$get('is_occupy'))
                     ->relationship('occupy')
                     ->schema([
                         FormComponents\Select::make('building_id')

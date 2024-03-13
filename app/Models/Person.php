@@ -53,4 +53,9 @@ class Person extends Model
     {
         return $this->belongsTo(Citizenship::class, 'citizenship_id', 'id');
     }
+
+    public function getIsOccupyAttribute(): bool
+    {
+        return !!($this->occupy);
+    }
 }
