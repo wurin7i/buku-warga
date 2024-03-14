@@ -15,8 +15,10 @@ use Filament\Tables\Columns as TableColumns;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use WuriN7i\IdRefs\Enums\Citizenship as EnumsCitizenship;
 use WuriN7i\IdRefs\Enums\Religion as EnumsReligion;
 use WuriN7i\IdRefs\Models\BloodType;
+use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\Gender;
 use WuriN7i\IdRefs\Models\Religion;
 
@@ -44,20 +46,25 @@ class PersonResource extends Resource
                 FormComponents\DatePicker::make('birth_date')
                     ->columnSpan(1)
                     ->native(false),
-                FormComponents\Checkbox::make('is_deceased')->columnSpan(2),
+                FormComponents\Checkbox::make('is_deceased')->columnSpan(2)
+                    ->live(),
                 FormComponents\Select::make('blood_type_id')
                     ->relationship('bloodType', 'label')
+                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
                 FormComponents\Select::make('religion_id')
                     ->relationship('religion', 'label', fn (Builder $query) => $query->orderBy('sort_order'))
                     ->default(Religion::fromEnum(EnumsReligion::Islam)->getKey())
+                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
                 FormComponents\Select::make('marital_id')
                     ->relationship('marital', 'label')
+                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
                 FormComponents\Select::make('citizenship_id')->required()
-                    ->default(13)
+                    ->default(Citizenship::fromEnum(EnumsCitizenship::WNI)->getKey())
                     ->relationship('citizenship', 'label')
+                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
                 FormComponents\Select::make('occupation_id')->columnSpan(2)
                     ->relationship('occupation', 'label')
@@ -66,22 +73,28 @@ class PersonResource extends Resource
                         FormComponents\TextInput::make('label')
                             ->required(),
                     ])
+                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
                 FormComponents\Checkbox::make('is_occupy')
-                    ->afterStateHydrated(function (FormComponents\Checkbox $checkbox) use ($form) {
-                        if ($form->model instanceof Person) {
-                            $checkbox->state($form->model->is_occupy);
+                    ->disabled(fn (Get $get) => $get('is_deceased'))
+                    ->afterStateHydrated(function (FormComponents\Checkbox $checkbox) {
+                        if ($checkbox->getContainer()->model instanceof Person) {
+                            $checkbox->state($checkbox->getContainer()->model->is_occupy);
                         }
-                    })->live(),
-                FormComponents\Fieldset::make('Penghuni')
-                    ->hidden(fn (Get $get) => !$get('is_occupy'))
+                    })
+                    ->dehydrated(false)
+                    ->live(),
+                FormComponents\Grid::make('occupy')
+                    ->label('Penghuni')
+                    ->visible(fn (Get $get) => $get('is_occupy') && !$get('is_deceased'))
                     ->relationship('occupy')
                     ->schema([
                         FormComponents\Select::make('building_id')
                             ->relationship('building', 'label')->native(false),
                         FormComponents\Checkbox::make('is_resident'),
                         FormComponents\DatePicker::make('moved_in_at')->native(false),
-                    ])
+                    ])->columns(2)
+                    ->key('occupyFields'),
             ])->columns(5);
     }
 
