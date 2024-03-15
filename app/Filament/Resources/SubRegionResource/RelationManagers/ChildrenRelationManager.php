@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\LocaleAreaResource\RelationManagers;
+namespace App\Filament\Resources\SubRegionResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,20 +18,18 @@ class ChildrenRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('label')
+                Forms\Components\TextInput::make('name')
                     ->required()->maxLength(255)
                     ->columnSpan(2),
-                Forms\Components\TextInput::make('code')
-                    ->required()->maxLength(16),
             ])->columns(3);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('label')
+            ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('label'),
+                Tables\Columns\TextColumn::make('name'),
             ])
             ->filters([
                 //

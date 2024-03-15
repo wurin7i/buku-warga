@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->char('nik', 16)->nullable()->unique();
+            $table->char('nik', 16)->nullable()->index();
             $table->char('kk_number', 16)->nullable();
             $table->string('name');
             $table->reference(ReferenceType::Gender);
@@ -22,8 +22,9 @@ return new class extends Migration
             $table->date('birth_date')->nullable();
             $table->boolean('is_deceased')->default(false);
             $table->string('address')->nullable();
+            $table->char('sub_region', 7)->nullable();
             $table->foreignId('region_id')->nullable()
-                ->references('id')->on('ref_regions');
+                ->constrained('ref_regions');
             $table->reference(ReferenceType::Religion);
             $table->reference(ReferenceType::Marital);
             $table->reference(ReferenceType::Occupation);

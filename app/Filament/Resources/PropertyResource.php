@@ -6,8 +6,8 @@ use App\Enums\AreaAttributes\Level as AreaLevel;
 use App\Filament\Resources\PropertyResource\Pages;
 use App\Filament\Resources\PropertyResource\RelationManagers;
 use App\Models\Area;
-use App\Models\CommunityArea;
-use App\Models\LocaleArea;
+use App\Models\Cluster;
+use App\Models\SubRegion;
 use App\Models\Property;
 use Filament\Forms;
 use Filament\Forms\Components as FormComponents;
@@ -30,25 +30,25 @@ class PropertyResource extends Resource
     {
         return $form
             ->schema([
-                FormComponents\Select::make('resident_community_id')
-                    ->options(LocaleArea::residentLocaleOnly()->pluck('label', 'id'))
+                FormComponents\Select::make('cluster_id')
+                    ->options(SubRegion::residentRegionOnly()->pluck('name', 'id'))
                     ->afterStateHydrated(function (FormComponents\Select $select, string $operation) use ($form) {
                         if ($operation !== 'create' ) {
-                            $select->state($form->getModelInstance()->locale_area->parent->getKey());
+                            $select->state($form->getModelInstance()->sub_region->parent->getKey());
                         }
                     })
                     ->native(false)
                     ->required()
                     ->dehydrated(false)
                     ->live(),
-                FormComponents\Select::make('locale_area_id')
-                    ->relationship('locale_area', 'label', fn (Get $get, LocaleArea $q) => ($parentId = $get('resident_community_id')) ? $q->applyParent($parentId) : $q)
-                    ->disabled(fn (Get $get) => !$get('resident_community_id'))
+                FormComponents\Select::make('sub_region_id')
+                    ->relationship('sub_region', 'name', fn (Get $get, SubRegion $q) => ($parentId = $get('cluster_id')) ? $q->applyParent($parentId) : $q)
+                    ->disabled(fn (Get $get) => !$get('cluster_id'))
                     // ->native(false)
                     ->required(),
-                FormComponents\Select::make('community_area_id')
-                    ->relationship('community_area', 'label')
-                    ->disabled(fn (Get $get) => !$get('resident_community_id'))
+                FormComponents\Select::make('cluster_id')
+                    ->relationship('cluster', 'name')
+                    ->disabled(fn (Get $get) => !$get('cluster_id'))
                     // ->native(false)
                     ->columnSpan(2),
                 FormComponents\TextInput::make('label')->columnSpan(2)
@@ -69,7 +69,7 @@ class PropertyResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('label'),
-                TextColumn::make('locale_area.label'),
+                TextColumn::make('sub_region.label'),
             ])
             ->filters([
                 //

@@ -12,7 +12,7 @@ class Property extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['label', 'has_building', 'locale_area_id'];
+    protected $fillable = ['label', 'has_building', 'sub_region_id'];
 
     protected $casts = [
         'has_building' => 'boolean',
@@ -23,14 +23,14 @@ class Property extends Model
         return $this->belongsTo(Person::class, 'owner_id', 'id');
     }
 
-    public function locale_area(): BelongsTo
+    public function sub_region(): BelongsTo
     {
-        return $this->belongsTo(LocaleArea::class, 'locale_area_id', 'id');
+        return $this->belongsTo(SubRegion::class, 'sub_region_id', 'id');
     }
 
-    public function community_area(): BelongsTo
+    public function cluster(): BelongsTo
     {
-        return $this->belongsTo(CommunityArea::class, 'community_area_id', 'id');
+        return $this->belongsTo(Cluster::class, 'cluster_id', 'id');
     }
 
     public function scopeBuildingOnly(Builder $builder, bool $bool = true) : Builder

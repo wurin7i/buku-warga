@@ -9,26 +9,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use WuriN7i\IdRefs\Models\Region;
 
 /**
- * Locale area
+ * Region area
  *
  * @property-read Area $parent
  * @property-read \Illuminate\Database\Eloquent\Collection $children
  * @method static Builder applyLevel(int $level)
  * @method static Builder applyParent(Area $parent)
- * @method static Builder residentLocaleOnly()
+ * @method static Builder residentRegionOnly()
  */
-class LocaleArea extends Area
+class SubRegion extends Area
 {
     protected static function booted(): void
     {
         static::creating(function (Area $model) {
-            $model->type = AreaType::Locale;
+            $model->type = AreaType::SubRegion;
             $model->level = ($model->parent?->level ?? 0) + 1;
         });
 
-        static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::Locale));
+        static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::SubRegion));
     }
 
     public function parent(): BelongsTo
@@ -55,8 +56,8 @@ class LocaleArea extends Area
         }
     }
 
-    public function scopeResidentLocaleOnly(Builder $builder): void
+    public function scopeResidentRegionOnly(Builder $builder): void
     {
-        $builder->applyType(AreaType::Locale)->applyLevel(1);
+        $builder->applyType(AreaType::SubRegion)->applyLevel(1);
     }
 }

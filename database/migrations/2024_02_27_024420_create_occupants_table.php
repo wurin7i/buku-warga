@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('occupants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('person_id')
-                ->references('id')->on('people')
+                ->constrained('people')
                 ->cascadeOnDelete();
             $table->foreignId('building_id')->nullable()
-                ->references('id')->on('properties')
+                ->constrained('properties')
                 ->cascadeOnDelete();
             $table->boolean('is_resident');
             $table->timestamp('moved_in_at')->nullable();

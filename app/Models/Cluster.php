@@ -11,21 +11,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Community area
+ * Cluster area
  */
-class CommunityArea extends Area
+class Cluster extends Area
 {
     protected static function booted(): void
     {
         static::creating(function (Area $model) {
-            $model->type = AreaType::Community;
+            $model->type = AreaType::Cluster;
         });
 
-        static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::Community));
+        static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::Cluster));
     }
 
     public function base_area() : BelongsTo
     {
-        return $this->belongsTo(LocaleArea::class, 'base_area_id', 'id');
+        return $this->belongsTo(SubRegion::class, 'base_area_id', 'id');
     }
 }

@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum AreaType: string
 {
-    case Locale = 'locale';
-    case Community = 'community';
+    case SubRegion = 'sub-region';
+    case Cluster = 'cluster';
 }

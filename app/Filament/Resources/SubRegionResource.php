@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\LocaleAreaResource\Pages;
-use App\Filament\Resources\LocaleAreaResource\RelationManagers;
-use App\Filament\Resources\LocaleAreaResource\RelationManagers\ChildrenRelationManager;
-use App\Models\LocaleArea;
+use App\Filament\Resources\SubRegionResource\Pages;
+use App\Filament\Resources\SubRegionResource\RelationManagers;
+use App\Filament\Resources\SubRegionResource\RelationManagers\ChildrenRelationManager;
+use App\Models\SubRegion;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,9 +17,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class LocaleAreaResource extends Resource
+class SubRegionResource extends Resource
 {
-    protected static ?string $model = LocaleArea::class;
+    protected static ?string $model = SubRegion::class;
 
     protected static ?string $navigationIcon = 'gmdi-account-tree-o';
 
@@ -29,8 +29,13 @@ class LocaleAreaResource extends Resource
     {
         return $form
             ->schema([
-                FormComponents\TextInput::make('label')->columnSpan(2),
-                FormComponents\TextInput::make('code')->columnSpan(1),
+                FormComponents\TextInput::make('name')
+                    ->autocomplete(false)
+                    ->columnSpan(2),
+                FormComponents\Select::make('parent_id')
+                    ->relationship(name: 'parent', titleAttribute: 'name')
+                    ->native(false)
+                    ->columnSpan(1),
             ])->columns(3);
     }
 
@@ -38,7 +43,7 @@ class LocaleAreaResource extends Resource
     {
         return $table
             ->columns([
-                TableColumns\TextColumn::make('label')->searchable(),
+                TableColumns\TextColumn::make('name')->searchable(),
             ])
             ->filters([
                 //
@@ -51,10 +56,10 @@ class LocaleAreaResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])->groups([
-                Group::make('parent.label')
+                Group::make('parent.name')
                     ->titlePrefixedWithLabel(false)
             ])
-            ->defaultGroup('parent.label')
+            ->defaultGroup('parent.name')
             ->groupingSettingsHidden();
     }
 
@@ -68,9 +73,9 @@ class LocaleAreaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLocaleAreas::route('/'),
-            'create' => Pages\CreateLocaleArea::route('/create'),
-            'edit' => Pages\EditLocaleArea::route('/{record}/edit'),
+            'index' => Pages\ListSubRegions::route('/'),
+            'create' => Pages\CreateSubRegion::route('/create'),
+            'edit' => Pages\EditSubRegion::route('/{record}/edit'),
         ];
     }
 }

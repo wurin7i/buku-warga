@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CommunityAreaResource\Pages;
-use App\Filament\Resources\CommunityAreaResource\RelationManagers;
-use App\Models\CommunityArea;
+use App\Filament\Resources\ClusterResource\Pages;
+use App\Filament\Resources\ClusterResource\RelationManagers;
+use App\Models\Cluster;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,9 +15,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CommunityAreaResource extends Resource
+class ClusterResource extends Resource
 {
-    protected static ?string $model = CommunityArea::class;
+    protected static ?string $model = Cluster::class;
 
     protected static ?string $navigationIcon = 'gmdi-domain';
 
@@ -27,12 +27,12 @@ class CommunityAreaResource extends Resource
     {
         return $form
             ->schema([
-                FormComponents\TextInput::make('label')
+                FormComponents\TextInput::make('name')
                     ->columnSpan(2),
                 FormComponents\TextInput::make('code')
                     ->columnSpan(1),
                 FormComponents\Select::make('base_area_id')
-                    ->relationship(name: 'base_area', titleAttribute: 'label')
+                    ->relationship(name: 'base_area', titleAttribute: 'name')
                     ->columnSpan(1),
             ])->columns(3);
     }
@@ -41,9 +41,9 @@ class CommunityAreaResource extends Resource
     {
         return $table
             ->columns([
-                TableColumns\TextColumn::make('label'),
+                TableColumns\TextColumn::make('name'),
                 TableColumns\TextColumn::make('code'),
-                TableColumns\TextColumn::make('base_area.label'),
+                TableColumns\TextColumn::make('base_area.name'),
             ])
             ->filters([
                 //
@@ -68,9 +68,9 @@ class CommunityAreaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCommunityAreas::route('/'),
-            'create' => Pages\CreateCommunityArea::route('/create'),
-            'edit' => Pages\EditCommunityArea::route('/{record}/edit'),
+            'index' => Pages\ListClusters::route('/'),
+            'create' => Pages\CreateCluster::route('/create'),
+            'edit' => Pages\EditCluster::route('/{record}/edit'),
         ];
     }
 }

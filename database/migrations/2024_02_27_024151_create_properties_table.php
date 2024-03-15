@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('label');
             $table->foreignId('owner_id')->nullable()
-                ->references('id')->on('people');
+                ->constrained('people');
             $table->boolean('has_building')->default(true);
-            $table->foreignId('locale_area_id')
-                ->references('id')->on('areas');
-            $table->foreignId('community_area_id')->nullable()
-                ->references('id')->on('areas');
+            $table->foreignId('sub_region_id')
+                ->constrained('areas');
+            $table->foreignId('cluster_id')->nullable()
+                ->constrained('areas');
             $table->softDeletes();
             $table->timestamps();
         });

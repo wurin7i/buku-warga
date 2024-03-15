@@ -14,19 +14,20 @@ return new class extends Migration
     {
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
-            $table->string('label');
+            $table->string('name');
             $table->foreignId('parent_id')->nullable()
-                ->references('id')->on('areas')
+                ->constrained('areas')
                 ->cascadeOnDelete();
-            $table->foreignId('base_area_id')->nullable()
-                ->references('id')->on('areas')
+            $table->foreignId('base_id')->nullable()
+                ->constrained('areas')
                 ->nullOnDelete();
             $table->foreignId('region_id')->nullable()
-                ->references('id')->on('ref_regions');
+                ->constrained('ref_regions');
             $table->enum('type', array_map(fn (AreaType $areaType) => $areaType->value, AreaType::cases()))
-                ->default(AreaType::Locale);
+                ->default(AreaType::SubRegion);
             $table->unsignedTinyInteger('level')->nullable();
+            $table->foreignId('holder_id')->nullable()
+                ->constrained('organizations');
             $table->softDeletes();
             $table->timestamps();
         });
