@@ -26,6 +26,6 @@ class Cluster extends Area
 
     public function base_area() : BelongsTo
     {
-        return $this->belongsTo(SubRegion::class, 'base_area_id', 'id');
+        return $this->belongsTo(SubRegion::class, 'base_id', 'id');
     }
 }
