@@ -26,12 +26,20 @@ class PropertyResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-home-work-o';
 
+    protected static ?string $recordTitleAttribute = 'label';
+
+    public static function getModelLabel(): string
+    {
+        return __('property.resource_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                FormComponents\Select::make('cluster_id')
-                    ->options(SubRegion::residentRegionOnly()->pluck('name', 'id'))
+                FormComponents\Select::make('region_rw_id')
+                    ->label(__('property.Region_RW'))
+                    ->options(SubRegion::rwOnly()->pluck('name', 'id'))
                     ->afterStateHydrated(function (FormComponents\Select $select, string $operation) use ($form) {
                         if ($operation !== 'create' ) {
                             $select->state($form->getModelInstance()->sub_region->parent->getKey());
@@ -42,25 +50,28 @@ class PropertyResource extends Resource
                     ->dehydrated(false)
                     ->live(),
                 FormComponents\Select::make('sub_region_id')
-                    ->relationship('sub_region', 'name', fn (Get $get, SubRegion $q) => ($parentId = $get('cluster_id')) ? $q->applyParent($parentId) : $q)
-                    ->disabled(fn (Get $get) => !$get('cluster_id'))
+                    ->label(__('property.Region_RT'))
+                    ->relationship('sub_region', 'name', fn (Get $get, SubRegion $q) => ($parentId = $get('region_rw_id')) ? $q->applyParent($parentId) : $q)
+                    ->disabled(fn (Get $get) => !$get('region_rw_id'))
                     // ->native(false)
                     ->required(),
                 FormComponents\Select::make('cluster_id')
+                    ->label(__('property.Cluster'))
                     ->relationship('cluster', 'name')
-                    ->disabled(fn (Get $get) => !$get('cluster_id'))
+                    ->disabled(fn (Get $get) => !$get('region_rw_id'))
                     // ->native(false)
                     ->columnSpan(2),
-                FormComponents\TextInput::make('label')->columnSpan(2)
-                    ->label('Detail Rumah')
+                FormComponents\TextInput::make('label')
+                    ->label(__('property.Label'))
                     ->required()
                     ->columnSpan(2),
-                FormComponents\Select::make('owner_id')->columnSpan(2)
+                FormComponents\Select::make('owner_id')
                     ->relationship('owner', 'name')
                     ->native(false)
                     ->createOptionForm([
                         FormComponents\TextInput::make('name')
-                    ]),
+                    ])
+                    ->columnSpan(2),
             ])->columns(4);
     }
 
@@ -68,8 +79,12 @@ class PropertyResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('label'),
-                TextColumn::make('sub_region.label'),
+                TextColumn::make('label')
+                    ->label(__('property.Label')),
+                TextColumn::make('cluster.name')
+                    ->label(__('property.Cluster')),
+                TextColumn::make('sub_region.name')
+                    ->label(__('property.Sub_Region')),
             ])
             ->filters([
                 //

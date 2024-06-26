@@ -17,11 +17,15 @@ use WuriN7i\IdRefs\Models\Region;
  * @property-read Area $parent
  * @property-read \Illuminate\Database\Eloquent\Collection $children
  * @method static Builder applyLevel(int $level)
+ * @method static Builder rwOnly()
  * @method static Builder applyParent(Area $parent)
- * @method static Builder residentRegionOnly()
+ * @method static Builder subRegionOnly()
  */
 class SubRegion extends Area
 {
+    public const LEVEL_RW = 1;
+    public const LEVEL_RT = 2;
+
     protected static function booted(): void
     {
         static::creating(function (Area $model) {
@@ -29,6 +33,7 @@ class SubRegion extends Area
             $model->level = ($model->parent?->level ?? 0) + 1;
         });
 
+        // todo: apply filtering by logged in user
         static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::SubRegion));
     }
 
@@ -40,6 +45,11 @@ class SubRegion extends Area
     public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id', 'id');
+    }
+
+    public function scopeRwOnly(Builder $builder): void
+    {
+        $this->scopeApplyLevel($builder, self::LEVEL_RW);
     }
 
     public function scopeApplyLevel(Builder $builder, int $level): void
@@ -54,10 +64,5 @@ class SubRegion extends Area
         } else {
             $builder->where($this->qualifyColumn('parent_id'), $parent);
         }
-    }
-
-    public function scopeResidentRegionOnly(Builder $builder): void
-    {
-        $builder->applyType(AreaType::SubRegion)->applyLevel(1);
     }
 }

@@ -24,8 +24,8 @@ class Cluster extends Area
         static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::Cluster));
     }
 
-    public function base_area() : BelongsTo
+    public function baseArea() : BelongsTo
     {
-        return $this->belongsTo(SubRegion::class, 'base_id', 'id');
+        return $this->belongsTo(SubRegion::class, 'parent_id', 'id');
     }
 }

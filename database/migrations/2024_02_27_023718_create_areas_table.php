@@ -18,16 +18,14 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()
                 ->constrained('areas')
                 ->cascadeOnDelete();
-            $table->foreignId('base_id')->nullable()
-                ->constrained('areas')
-                ->nullOnDelete();
             $table->foreignId('region_id')->nullable()
                 ->constrained('ref_regions');
             $table->enum('type', array_map(fn (AreaType $areaType) => $areaType->value, AreaType::cases()))
                 ->default(AreaType::SubRegion);
             $table->unsignedTinyInteger('level')->nullable();
-            $table->foreignId('holder_id')->nullable()
-                ->constrained('organizations');
+            $table->foreignId('creator_id')->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

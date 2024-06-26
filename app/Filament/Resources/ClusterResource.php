@@ -31,8 +31,8 @@ class ClusterResource extends Resource
                     ->columnSpan(2),
                 FormComponents\TextInput::make('code')
                     ->columnSpan(1),
-                FormComponents\Select::make('base_area_id')
-                    ->relationship(name: 'base_area', titleAttribute: 'name')
+                FormComponents\Select::make('parent_id')
+                    ->relationship(name: 'baseArea', titleAttribute: 'name')
                     ->columnSpan(1),
             ])->columns(3);
     }
@@ -43,7 +43,7 @@ class ClusterResource extends Resource
             ->columns([
                 TableColumns\TextColumn::make('name'),
                 TableColumns\TextColumn::make('code'),
-                TableColumns\TextColumn::make('base_area.name'),
+                TableColumns\TextColumn::make('baseArea.name'),
             ])
             ->filters([
                 //

@@ -15,8 +15,6 @@ return new class extends Migration
             $table->foreignId('person_id')->nullable()->after('name')
                 ->constrained('people')
                 ->nullOnDelete();
-            $table->foreignId('organization_id')->nullable()->after('name')
-                ->constrained('organizations');
         });
     }
 
@@ -26,7 +24,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('organization_id');
             $table->dropConstrainedForeignId('person_id');
         });
     }

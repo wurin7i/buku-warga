@@ -21,6 +21,9 @@ return new class extends Migration
                 ->constrained('areas');
             $table->foreignId('cluster_id')->nullable()
                 ->constrained('areas');
+            $table->foreignId('creator_id')->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

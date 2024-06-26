@@ -15,14 +15,14 @@ return new class extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             $table->char('nik', 16)->nullable()->index();
-            $table->char('kk_number', 16)->nullable();
-            $table->string('name');
+            $table->char('kk_number', 16)->nullable()->index();
+            $table->string('name')->index();
             $table->reference(ReferenceType::Gender);
             $table->string('birth_place')->nullable();
             $table->date('birth_date')->nullable();
             $table->boolean('is_deceased')->default(false);
             $table->string('address')->nullable();
-            $table->char('sub_region', 7)->nullable();
+            $table->char('sub_region', 7)->nullable()->comment('RT-RW in XXX/YYY format');
             $table->foreignId('region_id')->nullable()
                 ->constrained('ref_regions');
             $table->reference(ReferenceType::Religion);
@@ -30,6 +30,9 @@ return new class extends Migration
             $table->reference(ReferenceType::Occupation);
             $table->reference(ReferenceType::BloodType);
             $table->reference(ReferenceType::Citizenship);
+            $table->foreignId('creator_id')->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });
