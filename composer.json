@@ -9,13 +9,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "althinect/filament-spatie-roles-permissions": "^2.2",
         "codeat3/blade-google-material-design-icons": "^1.19",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "spatie/laravel-permission": "^6.9",
         "wikimedia/composer-merge-plugin": "^2.1",
         "wurin7i/id-refs": "^0.1"
     },
