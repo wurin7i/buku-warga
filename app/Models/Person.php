@@ -17,11 +17,13 @@ class Person extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nik', 'kk_number', 'name'];
+    protected $fillable = ['nik', 'kk_number', 'name', 'gender_id', 'birth_date', 'birth_place'];
 
     public function occupy(): HasOne
     {
-        return $this->hasOne(Occupant::class, 'person_id', 'id')->latestOfMany();
+        return $this->hasOne(Occupant::class, 'person_id', 'id')
+            ->occupyingOnly()
+            ->latestOfMany();
     }
 
     public function gender(): BelongsTo
@@ -54,8 +56,10 @@ class Person extends Model
         return $this->belongsTo(Citizenship::class, 'citizenship_id', 'id');
     }
 
-    public function getIsOccupyAttribute(): bool
+    public function getIsOccupyingAttribute(): bool
     {
-        return !!($this->occupy);
+        $occupy = $this->occupy;
+
+        return $occupy && !$occupy->has_moved_out;
     }
 }

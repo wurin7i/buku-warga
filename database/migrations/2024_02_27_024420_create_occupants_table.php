@@ -20,8 +20,8 @@ return new class extends Migration
                 ->constrained('properties')
                 ->cascadeOnDelete();
             $table->boolean('is_resident');
-            $table->timestamp('moved_in_at')->nullable();
-            $table->timestamp('moved_out_at')->nullable();
+            $table->date('moved_in_date')->nullable();
+            $table->date('moved_out_date')->nullable();
         });
     }
 
