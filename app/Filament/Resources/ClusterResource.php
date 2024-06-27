@@ -21,18 +21,37 @@ class ClusterResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-domain';
 
-    protected static ?string $navigationGroup = 'Areas';
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): string
+    {
+        return __('area.navigation_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('cluster.resource_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('cluster.resource_label');
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 FormComponents\TextInput::make('name')
+                    ->label(__('cluster.Name'))
                     ->columnSpan(2),
                 FormComponents\TextInput::make('code')
+                    ->label(__('cluster.Code'))
                     ->columnSpan(1),
                 FormComponents\Select::make('parent_id')
+                    ->label(__('cluster.Base_Area'))
                     ->relationship(name: 'baseArea', titleAttribute: 'name')
+                    ->native(false)
                     ->columnSpan(1),
             ])->columns(3);
     }
@@ -41,9 +60,12 @@ class ClusterResource extends Resource
     {
         return $table
             ->columns([
-                TableColumns\TextColumn::make('name'),
-                TableColumns\TextColumn::make('code'),
-                TableColumns\TextColumn::make('baseArea.name'),
+                TableColumns\TextColumn::make('name')
+                    ->label(__('cluster.Name')),
+                TableColumns\TextColumn::make('code')
+                    ->label(__('cluster.Code')),
+                TableColumns\TextColumn::make('baseArea.name')
+                    ->label(__('cluster.Base_Area')),
             ])
             ->filters([
                 //

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @method static applySubRegion(SubRegion|int $subRegion)
+ */
 class Property extends Model
 {
     use HasFactory, SoftDeletes;
@@ -23,9 +26,10 @@ class Property extends Model
         return $this->belongsTo(Person::class, 'owner_id', 'id');
     }
 
-    public function sub_region(): BelongsTo
+    public function subRegion(): BelongsTo
     {
-        return $this->belongsTo(SubRegion::class, 'sub_region_id', 'id');
+        return $this->belongsTo(SubRegion::class, 'sub_region_id', 'id')
+            ->rtOnly();
     }
 
     public function cluster(): BelongsTo
@@ -36,5 +40,10 @@ class Property extends Model
     public function scopeBuildingOnly(Builder $builder, bool $bool = true) : Builder
     {
         return $builder->where($this->qualifyColumn('has_building'), $bool);
+    }
+
+    public function scopeApplySubRegion(Builder $builder, SubRegion|int $subRegion): void
+    {
+        $builder->where($this->qualifyColumn('sub_region_id'), $subRegion);
     }
 }

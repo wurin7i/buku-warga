@@ -23,16 +23,35 @@ class SubRegionResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-account-tree-o';
 
-    protected static ?string $navigationGroup = 'Areas';
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): string
+    {
+        return __('area.navigation_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('sub_region.resource_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('sub_region.resource_label');
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 FormComponents\TextInput::make('name')
+                    ->label(__('sub_region.Name'))
                     ->autocomplete(false)
                     ->columnSpan(2),
-                FormComponents\Select::make('parent_id')
+                FormComponents\Select::make('parent')
+                    ->label(__('sub_region.Parent'))
                     ->relationship(name: 'parent', titleAttribute: 'name')
                     ->native(false)
                     ->columnSpan(1),
@@ -43,7 +62,9 @@ class SubRegionResource extends Resource
     {
         return $table
             ->columns([
-                TableColumns\TextColumn::make('name')->searchable(),
+                TableColumns\TextColumn::make('name')
+                    ->label(__('sub_region.Name'))
+                    ->searchable(),
             ])
             ->filters([
                 //
@@ -57,7 +78,7 @@ class SubRegionResource extends Resource
                 ]),
             ])->groups([
                 Group::make('parent.name')
-                    ->titlePrefixedWithLabel(false)
+                    ->titlePrefixedWithLabel(false),
             ])
             ->defaultGroup('parent.name')
             ->groupingSettingsHidden();

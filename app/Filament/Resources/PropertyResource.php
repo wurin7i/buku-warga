@@ -14,8 +14,10 @@ use Filament\Forms\Components as FormComponents;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -37,39 +39,31 @@ class PropertyResource extends Resource
     {
         return $form
             ->schema([
-                FormComponents\Select::make('region_rw_id')
-                    ->label(__('property.Region_RW'))
-                    ->options(SubRegion::rwOnly()->pluck('name', 'id'))
-                    ->afterStateHydrated(function (FormComponents\Select $select, string $operation) use ($form) {
-                        if ($operation !== 'create' ) {
-                            $select->state($form->getModelInstance()->sub_region->parent->getKey());
-                        }
+                FormComponents\Select::make('sub_region_id')
+                    ->label(__('property.Sub_Region'))
+                    ->options(function () {
+                        return SubRegion::with('parent')->rtOnly()->get()
+                            ->groupBy('parent.name')
+                            ->transform(fn ($subRegion) => $subRegion->pluck('name', 'id'));
                     })
                     ->native(false)
-                    ->required()
-                    ->dehydrated(false)
-                    ->live(),
-                FormComponents\Select::make('sub_region_id')
-                    ->label(__('property.Region_RT'))
-                    ->relationship('sub_region', 'name', fn (Get $get, SubRegion $q) => ($parentId = $get('region_rw_id')) ? $q->applyParent($parentId) : $q)
-                    ->disabled(fn (Get $get) => !$get('region_rw_id'))
-                    // ->native(false)
                     ->required(),
-                FormComponents\Select::make('cluster_id')
-                    ->label(__('property.Cluster'))
-                    ->relationship('cluster', 'name')
-                    ->disabled(fn (Get $get) => !$get('region_rw_id'))
-                    // ->native(false)
-                    ->columnSpan(2),
                 FormComponents\TextInput::make('label')
                     ->label(__('property.Label'))
-                    ->required()
+                    ->required(),
+                FormComponents\Select::make('cluster')
+                    ->label(__('property.Cluster'))
+                    ->relationship('cluster', 'name')
+                    ->native(false)
                     ->columnSpan(2),
-                FormComponents\Select::make('owner_id')
+                FormComponents\Select::make('owner')
+                    ->label(__('property.Owner'))
                     ->relationship('owner', 'name')
+                    ->searchable()
                     ->native(false)
                     ->createOptionForm([
                         FormComponents\TextInput::make('name')
+                            ->label(__('person.Name')),
                     ])
                     ->columnSpan(2),
             ])->columns(4);
@@ -80,14 +74,29 @@ class PropertyResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('label')
-                    ->label(__('property.Label')),
-                TextColumn::make('cluster.name')
-                    ->label(__('property.Cluster')),
-                TextColumn::make('sub_region.name')
-                    ->label(__('property.Sub_Region')),
+                    ->label(__('property.Label'))
+                    ->description(fn (Property $p) => $p->cluster?->name)
+                    ->weight(FontWeight::Bold)
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('owner.name')
+                    ->url(
+                        fn (Property $p): ?string => $p->owner
+                            ? PersonResource::getUrl('edit', ['record' => $p->owner])
+                            : null
+                    )
+                    ->label(__('property.Owner'))
+                    ->icon('gmdi-account-box-r')
+                    ->toggleable(),
+                TextColumn::make('subRegion.name')
+                    ->label(__('property.Sub_Region'))
+                    ->toggleable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('subRegion')
+                    ->label(__('property.Sub_Region'))
+                    ->relationship('subRegion', 'name')
+                    ->native(false)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

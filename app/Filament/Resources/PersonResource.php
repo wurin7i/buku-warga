@@ -136,8 +136,10 @@ class PersonResource extends Resource
                     ->label(__('person.Name'))
                     ->searchable(),
                 TableColumns\TextColumn::make('nik')
+                    ->toggleable()
                     ->label(__('person.NIK')),
                 TableColumns\TextColumn::make('occupy.building.label')
+                    ->toggleable()
                     ->label(__('person.Residence')),
             ])
             ->filters([

@@ -2,23 +2,34 @@
 
 namespace App\Filament\Resources\SubRegionResource\RelationManagers;
 
+use App\Enums\SubRegionLevel;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChildrenRelationManager extends RelationManager
 {
     protected static string $relationship = 'children';
 
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('sub_region.resource_children_title', [
+            'level' => SubRegionLevel::tryFrom($ownerRecord->level)->label(),
+            'name' => $ownerRecord->name,
+        ]);
+    }
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(__('sub_region.Name'))
                     ->required()->maxLength(255)
                     ->columnSpan(2),
             ])->columns(3);
@@ -29,7 +40,8 @@ class ChildrenRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label(__('sub_region.Name')),
             ])
             ->filters([
                 //
@@ -46,5 +58,10 @@ class ChildrenRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return $ownerRecord->level < SubRegionLevel::RT->value;
     }
 }
