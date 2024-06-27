@@ -12,13 +12,18 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use WuriN7i\IdRefs\Enums\Citizenship as EnumsCitizenship;
 use WuriN7i\IdRefs\Enums\Religion as EnumsReligion;
 use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\Gender;
+use WuriN7i\IdRefs\Models\Region;
 use WuriN7i\IdRefs\Models\Religion;
 
 class PersonResource extends Resource
@@ -41,54 +46,38 @@ class PersonResource extends Resource
                 FormComponents\TextInput::make('nik')->required()
                     ->label(__('person.NIK'))
                     ->columnSpan(2),
-                FormComponents\TextInput::make('kk_number')
-                    ->label(__('person.KK_Number'))
-                    ->columnSpan(2),
                 FormComponents\TextInput::make('name')
                     ->label(__('person.Name'))
                     ->required()
                     ->columnSpan(3),
-                FormComponents\Radio::make('gender_id')
-                    ->label(__('person.Gender'))
-                    ->required()
-                    ->options(Gender::getArrayOptions())
-                    ->columnSpan(2)
-                    ->inline()->inlineLabel(false),
                 FormComponents\TextInput::make('birth_place')
                     ->label(__('person.Place_of_Birth'))
                     ->columnSpan(2),
                 FormComponents\DatePicker::make('birth_date')
                     ->label(__('person.Date_of_Birth'))
-                    ->columnSpan(1)
+                    ->displayFormat('d/m/Y')
+                    ->placeholder('hh/bb/tttt')
                     ->native(false),
-                FormComponents\Checkbox::make('is_deceased')
-                    ->label(__('person.Is_Deceased'))
-                    ->columnSpan(2)
-                    ->live(),
-                FormComponents\Select::make('blood_type_id')
+                FormComponents\Select::make('gender')
+                    ->label(__('person.Gender'))
+                    ->required()
+                    ->relationship('gender', 'label')
+                    ->options(Gender::getArrayOptions())
+                    ->columnSpan(1),
+                FormComponents\Select::make('bloodType')
                     ->label(__('person.Blood_Type'))
                     ->relationship('bloodType', 'label')
-                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
-                FormComponents\Select::make('religion_id')
+                FormComponents\Select::make('religion')
                     ->label(__('person.Religion'))
                     ->relationship('religion', 'label', fn (Builder $query) => $query->orderBy('sort_order'))
                     ->default(Religion::fromEnum(EnumsReligion::Islam)->getKey())
-                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
-                FormComponents\Select::make('marital_id')
+                FormComponents\Select::make('marital')
                     ->label(__('person.Marital'))
                     ->relationship('marital', 'label')
-                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
-                FormComponents\Select::make('citizenship_id')
-                    ->label(__('person.Citizenship'))
-                    ->required()
-                    ->default(Citizenship::fromEnum(EnumsCitizenship::WNI)->getKey())
-                    ->relationship('citizenship', 'label')
-                    ->disabled(fn (Get $get) => $get('is_deceased'))
-                    ->native(false),
-                FormComponents\Select::make('occupation_id')
+                FormComponents\Select::make('occupation')
                     ->label(__('person.Occupation'))
                     ->relationship('occupation', 'label')
                     ->searchable()
@@ -97,34 +86,72 @@ class PersonResource extends Resource
                             ->required(),
                     ])
                     ->columnSpan(2)
-                    ->disabled(fn (Get $get) => $get('is_deceased'))
                     ->native(false),
-                FormComponents\Checkbox::make('is_occupying')
-                    ->label(__('person.Is_Occupying'))
-                    ->disabled(fn (Get $get) => $get('is_deceased'))
-                    ->afterStateHydrated(function (FormComponents\Checkbox $checkbox) {
-                        if ($checkbox->getContainer()->model instanceof Person) {
-                            $checkbox->state($checkbox->getContainer()->model->is_occupying);
-                        }
-                    })
-                    ->dehydrated(false)
-                    ->live(),
-                FormComponents\Grid::make('occupy')
-                    ->label('Penghuni')
-                    ->visible(fn (Get $get) => $get('is_occupying') && !$get('is_deceased'))
-                    ->relationship('occupy')
-                    ->schema([
-                        FormComponents\Select::make('building_id')
-                            ->label(__('person.Building'))
-                            ->relationship('building', 'label')
-                            ->native(false),
-                        FormComponents\Checkbox::make('is_resident')
-                            ->label(__('person.Is_Resident')),
-                        FormComponents\DatePicker::make('moved_in_at')
-                            ->label(__('person.Date_of_Move_In'))
-                            ->native(false),
-                    ])->columns(2)
-                    ->key('occupyFields'),
+                FormComponents\TextInput::make('address')
+                    ->label(__('person.Address'))
+                    ->columnSpan(2),
+                FormComponents\TextInput::make('sub_region')
+                    ->label(__('person.Sub_Region'))
+                    ->placeholder('000/000')
+                    ->mask('999/999'),
+                FormComponents\Select::make('region')
+                    ->label(__('person.Region'))
+                    ->relationship('region', 'name', fn (Builder $query) => $query->with('parent'))
+                    ->getOptionLabelFromRecordUsing(fn (Region $r) => "{$r->name}, {$r->parent->name}")
+                    ->searchable(['name'])
+                    ->native(false)
+                    ->columnSpan(2),
+                FormComponents\Select::make('citizenship')
+                    ->label(__('person.Citizenship'))
+                    ->required()
+                    ->default(Citizenship::fromEnum(EnumsCitizenship::WNI)->getKey())
+                    ->relationship('citizenship', 'label')
+                    ->native(false),
+                FormComponents\Tabs::make('Tabs')
+                    ->tabs([
+                        FormComponents\Tabs\Tab::make(__('person.Residence'))
+                            ->schema([
+                                // FormComponents\Checkbox::make('is_occupying')
+                                //     ->label(__('person.Is_Occupying'))
+                                //     ->disabled(fn (Get $get) => $get('is_deceased'))
+                                //     ->afterStateHydrated(function (FormComponents\Checkbox $checkbox, Person $person) {
+                                //         $checkbox->state($person->is_occupying);
+                                //     })
+                                //     ->dehydrated(false)
+                                //     ->live(),
+                                FormComponents\Grid::make('occupy')
+                                    ->label('Penghuni')
+                                    ->disabled(fn (Get $get) => /* !$get('is_occupying') || */ $get('is_deceased'))
+                                    ->relationship('occupy')
+                                    ->schema([
+                                        FormComponents\Select::make('building_id')
+                                            ->label(__('person.Building'))
+                                            ->relationship('building', 'label')
+                                            ->native(false),
+                                        FormComponents\DatePicker::make('moved_in_at')
+                                            ->label(__('person.Date_of_Move_In'))
+                                            ->native(false),
+                                        FormComponents\Checkbox::make('is_resident')
+                                            ->label(__('person.Is_Resident')),
+                                    ])->columns(3)
+                                    ->key('occupyFields'),
+                            ]),
+                        FormComponents\Tabs\Tab::make(__('person.Family'))
+                            ->schema([
+                                FormComponents\TextInput::make('kk_number')
+                                    ->label(__('person.KK_Number')),
+                                FormComponents\TextInput::make('_role')
+                                    ->label(__('person.Family_Role'))
+                                    ->disabled(true),
+                                FormComponents\TextInput::make('_father')
+                                    ->label(__('person.Father'))
+                                    ->disabled(true),
+                                FormComponents\TextInput::make('_mother')
+                                    ->label(__('person.Mother'))
+                                    ->disabled(true),
+
+                            ])->columns(2)
+                    ])->columnSpanFull(),
             ])->columns(5);
     }
 
@@ -143,8 +170,9 @@ class PersonResource extends Resource
                     ->label(__('person.Residence')),
             ])
             ->filters([
-                //
-            ])
+                // TODO: show alive only
+                // Filter::make('is_alive'),
+            ], layout: FiltersLayout::Modal)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
