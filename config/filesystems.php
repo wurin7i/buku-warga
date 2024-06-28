@@ -72,6 +72,7 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('theme/images') => resource_path('images'),
+        public_path('livewire') => base_path('vendor/livewire/livewire/dist'),
     ],
 
 ];
