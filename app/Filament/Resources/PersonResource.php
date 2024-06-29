@@ -96,8 +96,14 @@ class PersonResource extends Resource
                     ->mask('999/999'),
                 FormComponents\Select::make('region')
                     ->label(__('person.Region'))
-                    ->relationship('region', 'name', fn (Builder $query) => $query->with('parent'))
-                    ->getOptionLabelFromRecordUsing(fn (Region $r) => "{$r->name}, {$r->parent->name}")
+                    ->relationship(
+                        'region',
+                        'name',
+                        fn (Builder $query) => $query->villageOnly()->with(['parent', 'parent.parent'])
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn (Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
+                    )
                     ->searchable(['name'])
                     ->native(false)
                     ->columnSpan(2),
