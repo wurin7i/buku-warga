@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\BloodType;
@@ -41,14 +42,22 @@ class Person extends Model
      */
     protected static function booted(): void
     {
-        // static::addGlobalScope('alive', fn (Builder $q) => $q->applyIsAlive());
+        //
+    }
+
+    public function residents(): BelongsToMany
+    {
+        return $this->belongsToMany(Property::class, 'occupants', 'person_id', 'building_id')
+            ->withPivot(['is_resident', 'moved_in_date', 'moved_out_date']);
     }
 
     public function occupy(): HasOne
     {
-        return $this->hasOne(Occupant::class, 'person_id', 'id')
-            ->occupyingOnly()
-            ->latestOfMany();
+        return $this->hasOne(Occupant::class, 'person_id')
+            ->ofMany(
+                ['id' => 'MAX'],
+                fn (Builder $q) => $q->occupyingOnly()
+            );
     }
 
     public function gender(): BelongsTo

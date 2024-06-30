@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\AreaAttributes\Level as AreaLevel;
 use App\Filament\Resources\PropertyResource\Pages;
 use App\Filament\Resources\PropertyResource\RelationManagers;
+use App\Filament\Resources\PropertyResource\RelationManagers\OccupantsRelationManager;
 use App\Models\Area;
 use App\Models\Cluster;
 use App\Models\SubRegion;
@@ -44,7 +45,7 @@ class PropertyResource extends Resource
                     ->options(function () {
                         return SubRegion::with('parent')->rtOnly()->get()
                             ->groupBy('parent.name')
-                            ->transform(fn ($subRegion) => $subRegion->pluck('name', 'id'));
+                            ->transform(fn ($rows) => $rows->pluck('name', 'id'));
                     })
                     ->native(false)
                     ->required(),
@@ -111,7 +112,7 @@ class PropertyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            OccupantsRelationManager::class,
         ];
     }
 

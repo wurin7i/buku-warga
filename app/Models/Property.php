@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -24,6 +25,13 @@ class Property extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(Person::class, 'owner_id', 'id');
+    }
+
+    public function occupants(): BelongsToMany
+    {
+        return $this->belongsToMany(Person::class, 'occupants', 'building_id', 'person_id')
+            ->whereRaw('(`occupants`.`moved_out_date` IS NULL OR `occupants`.`moved_out_date` >= NOW())')
+            ->withPivot(['is_resident', 'moved_in_date', 'moved_out_date']);
     }
 
     public function subRegion(): BelongsTo

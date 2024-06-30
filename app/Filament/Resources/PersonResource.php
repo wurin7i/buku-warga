@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PersonResource\Pages;
 use App\Filament\Resources\PersonResource\RelationManagers;
 use App\Models\Person;
+use App\Models\Property;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -117,22 +118,19 @@ class PersonResource extends Resource
                     ->tabs([
                         FormComponents\Tabs\Tab::make(__('person.Residence'))
                             ->schema([
-                                // FormComponents\Checkbox::make('is_occupying')
-                                //     ->label(__('person.Is_Occupying'))
-                                //     ->disabled(fn (Get $get) => $get('is_deceased'))
-                                //     ->afterStateHydrated(function (FormComponents\Checkbox $checkbox, Person $person) {
-                                //         $checkbox->state($person->is_occupying);
-                                //     })
-                                //     ->dehydrated(false)
-                                //     ->live(),
                                 FormComponents\Grid::make('occupy')
                                     ->label('Penghuni')
-                                    ->disabled(fn (Get $get) => /* !$get('is_occupying') || */ $get('is_deceased'))
+                                    ->disabled(fn (Get $get) => $get('is_deceased'))
                                     ->relationship('occupy')
                                     ->schema([
                                         FormComponents\Select::make('building_id')
                                             ->label(__('person.Building'))
-                                            ->relationship('building', 'label')
+                                            ->options(
+                                                fn (Property $q) => $q->with('cluster')->buildingOnly()->get()
+                                                    ->groupBy('cluster.name')
+                                                    ->transform(fn ($rows) => $rows->pluck('label', 'id'))
+                                            )
+                                            ->searchable()
                                             ->native(false),
                                         FormComponents\DatePicker::make('moved_in_at')
                                             ->label(__('person.Date_of_Move_In'))
@@ -164,6 +162,7 @@ class PersonResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['occupy.building']))
             ->columns([
                 TableColumns\TextColumn::make('name')
                     ->label(__('person.Name'))
@@ -176,9 +175,8 @@ class PersonResource extends Resource
                     ->label(__('person.Residence')),
             ])
             ->filters([
-                // TODO: show alive only
-                // Filter::make('is_alive'),
-            ], layout: FiltersLayout::Modal)
+                //
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
