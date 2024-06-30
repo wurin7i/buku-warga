@@ -28,4 +28,9 @@ class Cluster extends Area
     {
         return $this->belongsTo(SubRegion::class, 'parent_id', 'id');
     }
+
+    public function properties(): HasMany
+    {
+        return $this->hasMany(Property::class, 'cluster_id');
+    }
 }

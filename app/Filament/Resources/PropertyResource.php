@@ -97,7 +97,11 @@ class PropertyResource extends Resource
                 SelectFilter::make('subRegion')
                     ->label(__('property.Sub_Region'))
                     ->relationship('subRegion', 'name')
-                    ->native(false)
+                    ->native(false),
+                SelectFilter::make('cluster')
+                    ->label(__('property.Cluster'))
+                    ->relationship('cluster', 'name')
+                    ->native(false),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

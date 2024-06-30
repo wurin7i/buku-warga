@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClusterResource\Pages;
 use App\Filament\Resources\ClusterResource\RelationManagers;
+use App\Filament\Resources\ClusterResource\RelationManagers\PropertiesRelationManager;
 use App\Models\Cluster;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
@@ -45,14 +46,10 @@ class ClusterResource extends Resource
                 FormComponents\TextInput::make('name')
                     ->label(__('cluster.Name'))
                     ->columnSpan(2),
-                FormComponents\TextInput::make('code')
-                    ->label(__('cluster.Code'))
-                    ->columnSpan(1),
                 FormComponents\Select::make('parent_id')
                     ->label(__('cluster.Base_Area'))
                     ->relationship(name: 'baseArea', titleAttribute: 'name')
-                    ->native(false)
-                    ->columnSpan(1),
+                    ->native(false),
             ])->columns(3);
     }
 
@@ -62,8 +59,6 @@ class ClusterResource extends Resource
             ->columns([
                 TableColumns\TextColumn::make('name')
                     ->label(__('cluster.Name')),
-                TableColumns\TextColumn::make('code')
-                    ->label(__('cluster.Code')),
                 TableColumns\TextColumn::make('baseArea.name')
                     ->label(__('cluster.Base_Area')),
             ])
@@ -83,7 +78,7 @@ class ClusterResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PropertiesRelationManager::class
         ];
     }
 

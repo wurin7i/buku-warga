@@ -16,6 +16,7 @@ use WuriN7i\IdRefs\Models\Region;
  * Region area
  *
  * @property-read Area $parent
+ * @property SubRegionLevel $level
  * @property-read \Illuminate\Database\Eloquent\Collection $children
  * @method static Builder applyLevel(int $level)
  * @method static Builder rwOnly()
@@ -25,6 +26,11 @@ use WuriN7i\IdRefs\Models\Region;
  */
 class SubRegion extends Area
 {
+    protected $casts = [
+        // TODO: apply cast & refactor app/Filament/Resources/ClusterResource/RelationManagers/PropertiesRelationManager.php:34
+        // 'level' => SubRegionLevel::class,
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (Area $model) {
