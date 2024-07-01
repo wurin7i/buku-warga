@@ -51,7 +51,7 @@ class PersonResource extends Resource
                 FormComponents\TextInput::make('nik')->required()
                     ->label(__('person.NIK'))
                     ->columnSpan(2)
-                    ->regex('/^\d{16}$')
+                    ->regex('/^\d{16}$/')
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         if (preg_match('/^\d{6}(\d{6})\d{4}$/', $state ?? '', $matches)) {
