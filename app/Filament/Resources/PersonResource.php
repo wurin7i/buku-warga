@@ -65,6 +65,10 @@ class PersonResource extends Resource
                             }
 
                             $birthDate = Carbon::createFromFormat('dmy', str_pad($dateNumber, 6, '0', STR_PAD_LEFT));
+                            if ($birthDate->startOfDay()->gt(today())) {
+                                $birthDate->subYears(100);
+                            }
+
                             $set('birth_date', $birthDate);
                             $set('gender', Gender::fromEnum($sex)->getKey());
                         }
