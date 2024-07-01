@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use WuriN7i\IdRefs\Enums\Citizenship as EnumsCitizenship;
 use WuriN7i\IdRefs\Enums\Gender as EnumsGender;
 use WuriN7i\IdRefs\Enums\Religion as EnumsReligion;
@@ -89,6 +90,29 @@ class PersonResource extends Resource
                     ->label(__('person.Blood_Type'))
                     ->relationship('bloodType', 'label')
                     ->native(false),
+                FormComponents\TextInput::make('address')
+                    ->label(__('person.Address'))
+                    ->columnSpan(2),
+                FormComponents\TextInput::make('sub_region')
+                    ->label(__('person.Sub_Region'))
+                    ->placeholder('000/000')
+                    ->mask('999/999'),
+                FormComponents\Select::make('region')
+                    ->label(__('person.Region'))
+                    ->relationship(
+                        'region',
+                        'name',
+                        fn (Builder $query) => $query->villageOnly()
+                            ->with(['parent', 'parent.parent'])
+                            ->join('ref_regions as p', 'p.id', '=', 'ref_regions.parent_id')
+                            ->select('ref_regions.*')
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn (Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
+                    )
+                    ->searchable(['ref_regions.name', "concat_ws(' ', `ref_regions`.`name`, `p`.`name`)"])
+                    ->native(false)
+                    ->columnSpan(2),
                 FormComponents\Select::make('religion')
                     ->label(__('person.Religion'))
                     ->relationship('religion', 'label', fn (Builder $query) => $query->orderBy('sort_order'))
@@ -108,26 +132,6 @@ class PersonResource extends Resource
                     ])
                     ->columnSpan(2)
                     ->native(false),
-                FormComponents\TextInput::make('address')
-                    ->label(__('person.Address'))
-                    ->columnSpan(2),
-                FormComponents\TextInput::make('sub_region')
-                    ->label(__('person.Sub_Region'))
-                    ->placeholder('000/000')
-                    ->mask('999/999'),
-                FormComponents\Select::make('region')
-                    ->label(__('person.Region'))
-                    ->relationship(
-                        'region',
-                        'name',
-                        fn (Builder $query) => $query->villageOnly()->with(['parent', 'parent.parent'])
-                    )
-                    ->getOptionLabelFromRecordUsing(
-                        fn (Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
-                    )
-                    ->searchable(['name'])
-                    ->native(false)
-                    ->columnSpan(2),
                 FormComponents\Select::make('citizenship')
                     ->label(__('person.Citizenship'))
                     ->required()
