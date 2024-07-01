@@ -177,8 +177,12 @@ class PersonResource extends Resource
                                 FormComponents\TextInput::make('_mother')
                                     ->label(__('person.Mother'))
                                     ->disabled(true),
-
-                            ])->columns(2)
+                            ])->columns(2),
+                        FormComponents\Tabs\Tab::make(__('person.Notes'))
+                            ->schema([
+                                FormComponents\Textarea::make('notes')
+                                    ->label(__('person.Notes')),
+                            ]),
                     ])->columnSpanFull(),
             ])->columns(5);
     }

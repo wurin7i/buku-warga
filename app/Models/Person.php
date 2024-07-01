@@ -35,6 +35,7 @@ class Person extends Model
         'is_deceased',
         'address',
         'sub_region',
+        'notes',
     ];
 
     /**

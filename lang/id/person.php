@@ -31,4 +31,5 @@ return [
     'Father' => 'Ayah',
     'Mother' => 'Ibu',
     'Declare_Death' => 'Meninggal Dunia',
+    'Notes' => 'Catatan',
 ];
