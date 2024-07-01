@@ -15,12 +15,14 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "sentry/sentry-laravel": "^4.6",
         "spatie/laravel-permission": "^6.9",
         "wikimedia/composer-merge-plugin": "^2.1",
         "wurin7i/id-refs": "^0.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
+        "itsgoingd/clockwork": "^5.2",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",
