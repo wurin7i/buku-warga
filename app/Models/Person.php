@@ -18,6 +18,7 @@ use WuriN7i\IdRefs\Models\Region;
 use WuriN7i\IdRefs\Models\Religion;
 
 /**
+ * @property Occupant $occupy
  * @method static applyIsResident(bool $occupying = true)
  * @method static applyIsDeceased(bool $deceased = true)
  * @method static applyIsAlive(bool $alive = true)

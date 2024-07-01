@@ -8,10 +8,13 @@ use App\Models\Person;
 use App\Models\Property;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\FormsComponent;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
 use Filament\Tables\Enums\FiltersLayout;
@@ -22,7 +25,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use WuriN7i\IdRefs\Enums\Citizenship as EnumsCitizenship;
 use WuriN7i\IdRefs\Enums\Gender as EnumsGender;
 use WuriN7i\IdRefs\Enums\Religion as EnumsReligion;
@@ -142,10 +144,38 @@ class PersonResource extends Resource
                     ->tabs([
                         FormComponents\Tabs\Tab::make(__('person.Residence'))
                             ->schema([
+                                FormComponents\Toggle::make('is_occupying')
+                                    ->label(__('person.Is_Occupying'))
+                                    ->live()
+                                    ->afterStateHydrated(fn (Toggle $comp, Person $p) => $comp->state($p->is_occupying))
+                                    ->dehydrated(false),
+                                FormComponents\Actions::make([
+                                        FormComponents\Actions\Action::make('move_out')
+                                            ->color('warning')
+                                            ->requiresConfirmation()
+                                            ->form([
+                                                FormComponents\DatePicker::make('moved_out_date')
+                                                    ->beforeOrEqual(now())
+                                                    ->displayFormat('d/m/Y')
+                                                    ->placeholder('hh/bb/tttt')
+                                                    ->native(false)
+                                                    ->required(),
+                                            ])
+                                            ->fillForm(fn () => [
+                                                'moved_out_date' => now(),
+                                            ])
+                                            ->action(function (array $data, Person $p, Set $set) {
+                                                $p->occupy?->moveOut(Carbon::create($data['moved_out_date']));
+                                                $set('is_occupying', false);
+                                            })
+                                            ->modalWidth(MaxWidth::Small)
+                                            ->visible(fn (Person $p, Get $get) => $p->is_occupying || ($get('is_occupying') && $p->exists)),
+                                    ])
+                                    ->alignEnd(),
                                 FormComponents\Grid::make('occupy')
                                     ->label('Penghuni')
-                                    ->disabled(fn (Get $get) => $get('is_deceased'))
                                     ->relationship('occupy')
+                                    ->hidden(fn (Get $get) => !$get('is_occupying'))
                                     ->schema([
                                         FormComponents\Select::make('building_id')
                                             ->label(__('person.Building'))
@@ -154,16 +184,25 @@ class PersonResource extends Resource
                                                     ->groupBy('cluster.name')
                                                     ->transform(fn ($rows) => $rows->pluck('label', 'id'))
                                             )
+                                            ->required()
                                             ->searchable()
-                                            ->native(false),
+                                            ->preload()
+                                            ->native(false)
+                                            ->live(),
                                         FormComponents\DatePicker::make('moved_in_at')
                                             ->label(__('person.Date_of_Move_In'))
+                                            ->disabled(fn (Get $get) => !$get('building_id'))
+                                            ->displayFormat('d/m/Y')
+                                            ->placeholder('hh/bb/tttt')
                                             ->native(false),
                                         FormComponents\Checkbox::make('is_resident')
-                                            ->label(__('person.Is_Resident')),
-                                    ])->columns(3)
+                                            ->label(__('person.Is_Resident'))
+                                            ->disabled(fn (Get $get) => !$get('building_id')),
+                                    ])
+                                    ->columns(3)
                                     ->key('occupyFields'),
-                            ]),
+                            ])
+                            ->columns(2),
                         FormComponents\Tabs\Tab::make(__('person.Family'))
                             ->schema([
                                 FormComponents\TextInput::make('kk_number')

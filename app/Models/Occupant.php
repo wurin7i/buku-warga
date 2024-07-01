@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,5 +44,16 @@ class Occupant extends Model
             fn () => $builder->whereNull($column)
                 ->orWhere($column, '>=', now())
         );
+    }
+
+    public function moveOut(?DateTime $moveOutDate = null, bool $persist = true): self
+    {
+        $this->moved_out_date = $moveOutDate ?? now();
+
+        if ($persist) {
+            $this->save();
+        }
+
+        return $this;
     }
 }
