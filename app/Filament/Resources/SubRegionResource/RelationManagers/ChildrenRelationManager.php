@@ -19,7 +19,7 @@ class ChildrenRelationManager extends RelationManager
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('sub_region.resource_children_title', [
-            'level' => SubRegionLevel::tryFrom($ownerRecord->level)->label(),
+            'level' => $ownerRecord->level->label(),
             'name' => $ownerRecord->name,
         ]);
     }
@@ -62,6 +62,6 @@ class ChildrenRelationManager extends RelationManager
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return $ownerRecord->level < SubRegionLevel::RT->value;
+        return $ownerRecord->level->value < SubRegionLevel::RT->value;
     }
 }

@@ -4,7 +4,9 @@ namespace App\Filament\Resources\SubRegionResource\Pages;
 
 use App\Filament\Resources\SubRegionResource;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListSubRegions extends ListRecords
 {
@@ -15,5 +17,24 @@ class ListSubRegions extends ListRecords
         return [
             Actions\CreateAction::make(),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'village' => Tab::make(__('sub_region.Village'))
+                ->modifyQueryUsing(fn (Builder $query) => $this->prepareQuery($query)->villageOnly()),
+            'rw' => Tab::make(__('sub_region.Rw'))
+                ->modifyQueryUsing(fn (Builder $query) => $this->prepareQuery($query)->rwOnly()),
+            'rt' => Tab::make(__('sub_region.Rt'))
+                ->modifyQueryUsing(fn (Builder $query) => $this->prepareQuery($query)->rtOnly()),
+        ];
+    }
+
+    public function prepareQuery(Builder $builder): Builder
+    {
+        return $builder->leftJoin('areas as p', 'p.id', '=', 'areas.parent_id')
+            ->select(['areas.*', 'p.name as parent_name', 'p.id as group_id'])
+            ->orderBy('parent_name');
     }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Enums;
 
-enum SubRegionLevel: int {
+enum SubRegionLevel: int implements Comparable
+{
+    use Concerns\Operations;
+
     case VILLAGE = 0;
     case RW = 1;
     case RT = 2;

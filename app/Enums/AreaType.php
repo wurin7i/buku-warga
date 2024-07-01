@@ -2,8 +2,12 @@
 
 namespace App\Enums;
 
-enum AreaType: string
+use App\Enums\Concerns\Operations;
+
+enum AreaType: string implements Comparable
 {
+    use Operations;
+
     case SubRegion = 'sub-region';
     case Cluster = 'cluster';
 }

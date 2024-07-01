@@ -27,18 +27,18 @@ use WuriN7i\IdRefs\Models\Region;
 class SubRegion extends Area
 {
     protected $casts = [
-        // TODO: apply cast & refactor app/Filament/Resources/ClusterResource/RelationManagers/PropertiesRelationManager.php:34
-        // 'level' => SubRegionLevel::class,
+        'level' => SubRegionLevel::class,
+    ];
+
+    protected $fillable = [
+        'name', 'level',
     ];
 
     protected static function booted(): void
     {
-        static::creating(function (Area $model) {
+        static::creating(function (SubRegion $model) {
             $model->type = AreaType::SubRegion;
-        });
-
-        static::updating(function ($model) {
-            $model->level = ($model->parent?->level ?? SubRegionLevel::VILLAGE->value) + 1;
+            $model->level = ($model->parent?->level ?? SubRegionLevel::VILLAGE)->value + 1;
         });
 
         // todo: apply filtering by logged in user
@@ -53,6 +53,11 @@ class SubRegion extends Area
     public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id', 'id');
+    }
+
+    public function scopeVillageOnly(Builder $builder): void
+    {
+        $this->scopeApplyLevel($builder, SubRegionLevel::VILLAGE);
     }
 
     public function scopeRwOnly(Builder $builder): void

@@ -48,13 +48,17 @@ class SubRegionResource extends Resource
             ->schema([
                 FormComponents\TextInput::make('name')
                     ->label(__('sub_region.Name'))
+                    ->required()
                     ->autocomplete(false)
                     ->columnSpan(2),
                 FormComponents\Select::make('parent')
                     ->label(__('sub_region.Parent'))
+                    ->required()
+                    ->searchable()
+                    ->preload()
                     ->relationship(name: 'parent', titleAttribute: 'name')
-                    ->native(false)
-                    ->columnSpan(1),
+                    ->disabledOn('edit')
+                    ->native(false),
             ])->columns(3);
     }
 
