@@ -10,6 +10,7 @@ use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
@@ -20,7 +21,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 use WuriN7i\IdRefs\Enums\Citizenship as EnumsCitizenship;
+use WuriN7i\IdRefs\Enums\Gender as EnumsGender;
 use WuriN7i\IdRefs\Enums\Religion as EnumsReligion;
 use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\Gender;
@@ -46,7 +49,24 @@ class PersonResource extends Resource
             ->schema([
                 FormComponents\TextInput::make('nik')->required()
                     ->label(__('person.NIK'))
-                    ->columnSpan(2),
+                    ->columnSpan(2)
+                    ->regex('/^\d{16}$')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Set $set, ?string $state) {
+                        if (preg_match('/^\d{6}(\d{6})\d{4}$/', $state ?? '', $matches)) {
+                            if (($dateNumber = floatval($matches[1])) > 400000) {
+                                $sex = EnumsGender::Female;
+                                $dateNumber -= 400000;
+                            } else {
+                                $sex = EnumsGender::Male;
+                            }
+
+                            $birthDate = Carbon::createFromFormat('dmy', str_pad($dateNumber, 6, '0', STR_PAD_LEFT));
+                            $set('birth_date', $birthDate->format('d/m/Y'));
+                            $set('gender', Gender::fromEnum($sex)->getKey());
+                        }
+
+                    }),
                 FormComponents\TextInput::make('name')
                     ->label(__('person.Name'))
                     ->required()
@@ -63,7 +83,7 @@ class PersonResource extends Resource
                     ->label(__('person.Gender'))
                     ->required()
                     ->relationship('gender', 'label')
-                    ->options(Gender::getArrayOptions())
+                    ->preload()
                     ->columnSpan(1),
                 FormComponents\Select::make('bloodType')
                     ->label(__('person.Blood_Type'))
