@@ -14,6 +14,7 @@ use Filament\Forms\FormsComponent;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontFamily;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
@@ -72,7 +73,6 @@ class PersonResource extends Resource
                             $set('birth_date', $birthDate);
                             $set('gender', Gender::fromEnum($sex)->getKey());
                         }
-
                     }),
                 FormComponents\TextInput::make('name')
                     ->label(__('person.Name'))
@@ -193,7 +193,7 @@ class PersonResource extends Resource
                                             ->preload()
                                             ->native(false)
                                             ->live(),
-                                        FormComponents\DatePicker::make('moved_in_at')
+                                        FormComponents\DatePicker::make('moved_in_date')
                                             ->label(__('person.Date_of_Move_In'))
                                             ->disabled(fn (Get $get) => !$get('building_id'))
                                             ->displayFormat('d/m/Y')
@@ -237,14 +237,21 @@ class PersonResource extends Resource
             ->columns([
                 TableColumns\TextColumn::make('name')
                     ->label(__('person.Name'))
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TableColumns\TextColumn::make('nik')
-                    ->toggleable()
-                    ->label(__('person.NIK')),
+                    ->label(__('person.NIK'))
+                    ->fontFamily(FontFamily::Mono)
+                    ->toggleable(),
                 TableColumns\TextColumn::make('occupy.building.label')
+                    ->label(__('person.Residence'))
                     ->toggleable()
-                    ->label(__('person.Residence')),
+                    ->sortable(),
+                TableColumns\TextColumn::make('created_at')
+                    ->hidden()
+                    ->dateTime(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
