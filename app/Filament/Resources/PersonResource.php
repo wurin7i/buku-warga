@@ -55,6 +55,8 @@ class PersonResource extends Resource
                     ->label(__('person.NIK'))
                     ->columnSpan(2)
                     ->regex('/^\d{16}$/')
+                    ->mask('9999999999999999')
+                    ->rules('digits:16')
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         if (preg_match('/^\d{6}(\d{6})\d{4}$/', $state ?? '', $matches)) {
@@ -198,6 +200,7 @@ class PersonResource extends Resource
                                             ->disabled(fn (Get $get) => !$get('building_id'))
                                             ->displayFormat('d/m/Y')
                                             ->placeholder('hh/bb/tttt')
+                                            ->beforeOrEqual('today')
                                             ->native(false),
                                         FormComponents\Checkbox::make('is_resident')
                                             ->label(__('person.Is_Resident'))
@@ -210,7 +213,9 @@ class PersonResource extends Resource
                         FormComponents\Tabs\Tab::make(__('person.Family'))
                             ->schema([
                                 FormComponents\TextInput::make('kk_number')
-                                    ->label(__('person.KK_Number')),
+                                    ->label(__('person.KK_Number'))
+                                    ->mask('9999999999999999')
+                                    ->rules('digits:16'),
                                 FormComponents\TextInput::make('_role')
                                     ->label(__('person.Family_Role'))
                                     ->disabled(true),
