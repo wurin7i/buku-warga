@@ -21,12 +21,14 @@ class OccupantsRelationManager extends RelationManager
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
-                Forms\Components\Checkbox::make('is_resident'),
                 Forms\Components\DatePicker::make('moved_in_date')
                     ->native(false),
-                Forms\Components\DatePicker::make('moved_out_date')
-                    ->native(false),
+                Forms\Components\Checkbox::make('is_resident'),
+                Forms\Components\Textarea::make('notes')
+                    ->label(__('person.Notes'))
+                    ->columnSpanFull(),
             ]);
     }
 

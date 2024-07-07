@@ -65,6 +65,8 @@ class PropertyResource extends Resource
                     ->createOptionForm([
                         FormComponents\TextInput::make('name')
                             ->label(__('person.Name')),
+                        FormComponents\Textarea::make('notes')
+                            ->label(__('person.Notes')),
                     ])
                     ->columnSpan(2),
             ])->columns(4);
