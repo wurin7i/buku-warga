@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasIdentity;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ use WuriN7i\IdRefs\Models\Religion;
  */
 class Person extends Model
 {
-    use HasFactory;
+    use HasFactory, HasIdentity;
 
     protected $fillable = [
         'nik',
@@ -38,14 +39,6 @@ class Person extends Model
         'sub_region',
         'notes',
     ];
-
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        //
-    }
 
     public function residents(): BelongsToMany
     {

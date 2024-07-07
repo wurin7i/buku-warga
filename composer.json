@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.8",
         "sentry/sentry-laravel": "^4.6",
         "spatie/laravel-permission": "^6.9",
+        "spatie/laravel-schemaless-attributes": "^2.5",
         "wikimedia/composer-merge-plugin": "^2.1",
         "wurin7i/id-refs": "^0.1"
     },

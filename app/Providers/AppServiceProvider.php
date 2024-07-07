@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Identifier;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        foreach (config('identity.enum')::cases() as $type) {
+            $this->app->bind("{$type->value}.model", fn () => new Identifier(['identifier_type' => $type->value]));
+        }
     }
 }

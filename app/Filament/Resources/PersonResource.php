@@ -226,6 +226,15 @@ class PersonResource extends Resource
                                     ->label(__('person.Mother'))
                                     ->disabled(true),
                             ])->columns(2),
+                        FormComponents\Tabs\Tab::make('Izin Tinggal')
+                            ->schema([
+                                FormComponents\Grid::make('kitas')
+                                    ->relationship('kitas')
+                                    ->schema([
+                                        FormComponents\TextInput::make('identifier_value'),
+                                        FormComponents\DatePicker::make('expiry_date'),
+                                    ]),
+                            ]),
                         FormComponents\Tabs\Tab::make(__('person.Notes'))
                             ->schema([
                                 FormComponents\Textarea::make('notes')
