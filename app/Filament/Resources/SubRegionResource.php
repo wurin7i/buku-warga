@@ -66,7 +66,7 @@ class SubRegionResource extends Resource
     {
         return $table
             ->columns([
-                TableColumns\TextColumn::make('sub_region_name')
+                TableColumns\TextColumn::make('name')
                     ->label(__('sub_region.Name'))
                     ->searchable('areas.name'),
             ])
