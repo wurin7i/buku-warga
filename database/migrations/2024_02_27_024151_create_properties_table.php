@@ -14,8 +14,16 @@ return new class extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
             $table->string('label');
-            $table->foreignId('owner_id')->references('id')->on('people');
+            $table->foreignId('owner_id')->nullable()
+                ->constrained('people');
             $table->boolean('has_building')->default(true);
+            $table->foreignId('sub_region_id')
+                ->constrained('areas');
+            $table->foreignId('cluster_id')->nullable()
+                ->constrained('areas');
+            $table->foreignId('creator_id')->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

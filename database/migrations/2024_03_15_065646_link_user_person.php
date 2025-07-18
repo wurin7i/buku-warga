@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('administrative_areas', function (Blueprint $table) {
-            $table->id();
-            $table->string('label');
-            $table->foreignId('parent_id')->references('id')->on('administrative_areas')
-                ->cascadeOnDelete();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('person_id')->nullable()->after('name')
+                ->constrained('people')
+                ->nullOnDelete();
         });
     }
 
@@ -25,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('administrative_areas');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('person_id');
+        });
     }
 };

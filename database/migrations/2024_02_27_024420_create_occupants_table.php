@@ -12,15 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('occupants', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->foreign('id')->references('id')->on('people')
+            $table->id();
+            $table->foreignId('person_id')
+                ->constrained('people')
                 ->cascadeOnDelete();
             $table->foreignId('building_id')->nullable()
-                ->references('id')->on('properties')
+                ->constrained('properties')
                 ->cascadeOnDelete();
             $table->boolean('is_resident');
-            $table->timestamp('moved_in_at')->nullable();
-            $table->timestamp('moved_out_at')->nullable();
+            $table->date('moved_in_date')->nullable();
+            $table->date('moved_out_date')->nullable();
         });
     }
 

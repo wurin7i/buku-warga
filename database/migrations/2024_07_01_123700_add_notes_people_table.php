@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->integerIncrements('id');
-            $table->string('code')->unique();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('people', function (Blueprint $table) {
+            $table->text('notes')->nullable()->after('citizenship_id');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::table('people', function (Blueprint $table) {
+            $table->dropColumn('notes');
+        });
     }
 };
