@@ -2,6 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Actions;
+use Filament\Actions\Action;
+use Filament\Support\Enums\Width;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PersonResource\Pages\ListPeople;
+use App\Filament\Resources\PersonResource\Pages\CreatePerson;
+use App\Filament\Resources\PersonResource\Pages\EditPerson;
 use App\Filament\Resources\PersonResource\Pages;
 use App\Filament\Resources\PersonResource\RelationManagers;
 use App\Models\Person;
@@ -9,13 +25,9 @@ use App\Models\Property;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Forms\FormsComponent;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontFamily;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Columns as TableColumns;
 use Filament\Tables\Enums\FiltersLayout;
@@ -38,7 +50,10 @@ class PersonResource extends Resource
 {
     protected static ?string $model = Person::class;
 
-    protected static ?string $navigationIcon = 'gmdi-people-alt-tt';
+    public static function getNavigationIcon(): ?string
+    {
+        return 'gmdi-people-alt-tt';
+    }
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -47,10 +62,10 @@ class PersonResource extends Resource
         return __('person.resource_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 FormComponents\TextInput::make('nik')->required()
                     ->label(__('person.NIK'))
                     ->columnSpan(2)
@@ -110,20 +125,20 @@ class PersonResource extends Resource
                     ->relationship(
                         'region',
                         'name',
-                        fn (Builder $query) => $query->villageOnly()
+                        fn(Builder $query) => $query->villageOnly()
                             ->with(['parent', 'parent.parent'])
                             ->join('ref_regions as p', 'p.id', '=', 'ref_regions.parent_id')
                             ->select('ref_regions.*')
                     )
                     ->getOptionLabelFromRecordUsing(
-                        fn (Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
+                        fn(Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
                     )
                     ->searchable(['ref_regions.name', "concat_ws(' ', `ref_regions`.`name`, `p`.`name`)"])
                     ->native(false)
                     ->columnSpan(2),
                 FormComponents\Select::make('religion')
                     ->label(__('person.Religion'))
-                    ->relationship('religion', 'label', fn (Builder $query) => $query->orderBy('sort_order'))
+                    ->relationship('religion', 'label', fn(Builder $query) => $query->orderBy('sort_order'))
                     ->default(Religion::fromEnum(EnumsReligion::Islam)->getKey())
                     ->native(false),
                 FormComponents\Select::make('marital')
@@ -146,49 +161,58 @@ class PersonResource extends Resource
                     ->default(Citizenship::fromEnum(EnumsCitizenship::WNI)->getKey())
                     ->relationship('citizenship', 'label')
                     ->native(false),
-                FormComponents\Tabs::make('Tabs')
+                Tabs::make('Tabs')
                     ->tabs([
-                        FormComponents\Tabs\Tab::make(__('person.Residence'))
+                        Tab::make(__('person.Residence'))
                             ->schema([
                                 FormComponents\Toggle::make('is_occupying')
                                     ->label(__('person.Is_Occupying'))
                                     ->live()
-                                    ->afterStateHydrated(fn (Toggle $comp, Person $p) => $comp->state($p->is_occupying))
+                                    ->afterStateHydrated(function (Toggle $component, $record) {
+                                        if ($record && $record instanceof Person) {
+                                            $component->state($record->is_occupying);
+                                        }
+                                    })
                                     ->dehydrated(false),
-                                FormComponents\Actions::make([
-                                        FormComponents\Actions\Action::make('move_out')
-                                            ->color('warning')
-                                            ->requiresConfirmation()
-                                            ->form([
-                                                FormComponents\DatePicker::make('moved_out_date')
-                                                    ->beforeOrEqual(now())
-                                                    ->displayFormat('d/m/Y')
-                                                    ->placeholder('hh/bb/tttt')
-                                                    ->native(false)
-                                                    ->required(),
-                                            ])
-                                            ->fillForm(fn () => [
-                                                'moved_out_date' => now(),
-                                            ])
-                                            ->action(function (array $data, Person $p, Set $set) {
-                                                $p->occupy?->moveOut(Carbon::create($data['moved_out_date']));
+                                Actions::make([
+                                    Action::make('move_out')
+                                        ->color('warning')
+                                        ->requiresConfirmation()
+                                        ->schema([
+                                            FormComponents\DatePicker::make('moved_out_date')
+                                                ->beforeOrEqual(now())
+                                                ->displayFormat('d/m/Y')
+                                                ->placeholder('hh/bb/tttt')
+                                                ->native(false)
+                                                ->required(),
+                                        ])
+                                        ->fillForm(fn() => [
+                                            'moved_out_date' => now(),
+                                        ])
+                                        ->action(function (array $data, $record, Set $set) {
+                                            if ($record && $record instanceof Person) {
+                                                $record->occupy?->moveOut(Carbon::create($data['moved_out_date']));
                                                 $set('is_occupying', false);
-                                            })
-                                            ->modalWidth(MaxWidth::Small)
-                                            ->visible(fn (Person $p, Get $get) => $p->is_occupying || ($get('is_occupying') && $p->exists)),
-                                    ])
+                                            }
+                                        })
+                                        ->modalWidth(Width::Small)
+                                        ->visible(function ($record, Get $get) {
+                                            if (!$record || !($record instanceof Person)) {
+                                                return $get('is_occupying');
+                                            }
+                                            return $record->is_occupying || ($get('is_occupying') && $record->exists);
+                                        }),
+                                ])
                                     ->alignEnd(),
-                                FormComponents\Grid::make('occupy')
-                                    ->label('Penghuni')
+                                Group::make()
                                     ->relationship('occupy')
-                                    ->hidden(fn (Get $get) => !$get('is_occupying'))
                                     ->schema([
                                         FormComponents\Select::make('building_id')
                                             ->label(__('person.Building'))
                                             ->options(
-                                                fn (Property $q) => $q->with('cluster')->buildingOnly()->get()
+                                                fn() => Property::with('cluster')->buildingOnly()->get()
                                                     ->groupBy('cluster.name')
-                                                    ->transform(fn ($rows) => $rows->pluck('label', 'id'))
+                                                    ->transform(fn($rows) => $rows->pluck('label', 'id'))
                                             )
                                             ->required()
                                             ->searchable()
@@ -197,20 +221,21 @@ class PersonResource extends Resource
                                             ->live(),
                                         FormComponents\DatePicker::make('moved_in_date')
                                             ->label(__('person.Date_of_Move_In'))
-                                            ->disabled(fn (Get $get) => !$get('building_id'))
+                                            ->disabled(fn(Get $get) => !$get('building_id'))
                                             ->displayFormat('d/m/Y')
                                             ->placeholder('hh/bb/tttt')
                                             ->beforeOrEqual('today')
                                             ->native(false),
                                         FormComponents\Checkbox::make('is_resident')
                                             ->label(__('person.Is_Resident'))
-                                            ->disabled(fn (Get $get) => !$get('building_id')),
+                                            ->disabled(fn(Get $get) => !$get('building_id')),
                                     ])
                                     ->columns(3)
+                                    ->hidden(fn(Get $get) => !$get('is_occupying'))
                                     ->key('occupyFields'),
                             ])
                             ->columns(2),
-                        FormComponents\Tabs\Tab::make(__('person.Family'))
+                        Tab::make(__('person.Family'))
                             ->schema([
                                 FormComponents\TextInput::make('kk_number')
                                     ->label(__('person.KK_Number'))
@@ -226,7 +251,7 @@ class PersonResource extends Resource
                                     ->label(__('person.Mother'))
                                     ->disabled(true),
                             ])->columns(2),
-                        FormComponents\Tabs\Tab::make(__('person.Notes'))
+                        Tab::make(__('person.Notes'))
                             ->schema([
                                 FormComponents\Textarea::make('notes')
                                     ->label(__('person.Notes')),
@@ -238,7 +263,7 @@ class PersonResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['occupy.building']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['occupy.building']))
             ->columns([
                 TableColumns\TextColumn::make('name')
                     ->label(__('person.Name'))
@@ -260,12 +285,12 @@ class PersonResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -280,9 +305,9 @@ class PersonResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPeople::route('/'),
-            'create' => Pages\CreatePerson::route('/create'),
-            'edit' => Pages\EditPerson::route('/{record}/edit'),
+            'index' => ListPeople::route('/'),
+            'create' => CreatePerson::route('/create'),
+            'edit' => EditPerson::route('/{record}/edit'),
         ];
     }
 }

@@ -2,11 +2,20 @@
 
 namespace App\Filament\Resources\ClusterResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\AssociateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use App\Enums\SubRegionLevel;
 use App\Models\Cluster;
 use App\Models\SubRegion;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,14 +26,14 @@ class PropertiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'properties';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('label')
+        return $schema
+            ->components([
+                TextInput::make('label')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('sub_region_id')
+                Select::make('sub_region_id')
                     ->relationship(
                         name: 'subRegion',
                         titleAttribute: 'name',
@@ -44,7 +53,7 @@ class PropertiesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('label')
             ->columns([
-                Tables\Columns\TextColumn::make('label')
+                TextColumn::make('label')
                     ->sortable(),
             ])
             ->inverseRelationship('cluster')
@@ -52,17 +61,17 @@ class PropertiesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
                 // TODO: show only properies with RT matches baseArea
-                Tables\Actions\AssociateAction::make(),
+                AssociateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

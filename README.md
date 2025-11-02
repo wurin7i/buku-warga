@@ -2,10 +2,11 @@
 
 <div align="center">
 
-[![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![Filament](https://img.shields.io/badge/Filament-3.x-F59E0B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K&logoColor=white)](https://filamentphp.com)
-[![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Filament](https://img.shields.io/badge/Filament-4.x-F59E0B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K&logoColor=white)](https://filamentphp.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-0.1-blue?style=for-the-badge)](https://github.com/wurin7i/buku-warga/releases)
 
 *Modern community management system for neighborhoods, villages, and residential areas*
 
@@ -46,20 +47,34 @@
   - Secure user authentication
   - Data integrity protection
 
+### 🇮🇩 Indonesian Data Integration
+
+**Buku Warga** includes a custom **ID-Refs** package that provides comprehensive Indonesian citizen identity references:
+
+- **Regional Data**: Complete Indonesian administrative regions (Province, Regency, District, Village)
+- **Identity References**: Standard codes for gender, religion, marital status, blood type, occupation
+- **Data Synchronization**: Built-in command to update regional data from Kemendagri sources
+- **Validation**: NIK (16-digit) validation and formatting
+- **Localization**: Full Indonesian language support
+
+The integrated ID-Refs package ensures your community data aligns with official Indonesian standards and provides accurate demographic information management.
+
 ### 🛠 Tech Stack
 
-- **Backend**: Laravel 10.x (PHP 8.1+)
-- **Admin Panel**: Filament 3.x
+- **Backend**: Laravel 11.x (PHP 8.3+)
+- **Admin Panel**: Filament 4.x
 - **Database**: MySQL/PostgreSQL
 - **Frontend**: Blade Templates with Livewire
 - **Styling**: Tailwind CSS
 - **Icons**: Google Material Design Icons
+- **Indonesian References**: Custom ID-Refs package for Indonesian citizen identity data
 
 ### 📋 Requirements
 
-- PHP 8.1 or higher
+- PHP 8.3 or higher
 - Composer 2.x
 - MySQL 8.0+ or PostgreSQL 13+
+- Node.js 18+ and npm
 - Web server (Apache/Nginx)
 
 ### 🚀 Installation
@@ -107,16 +122,21 @@
    php artisan make:filament-user
    ```
 
-8. **Initialize community data**
+8. **Seed Indonesian reference data (optional)**
+   ```bash
+   php artisan idrefs:update-data
+   ```
+
+9. **Initialize community data**
    ```bash
    php artisan bukuwarga:init
    ```
 
-9. **Build assets and start server**
-   ```bash
-   npm run build
-   php artisan serve
-   ```
+10. **Build assets and start server**
+    ```bash
+    npm run build
+    php artisan serve
+    ```
 
 ### � Troubleshooting
 
@@ -205,20 +225,34 @@ For support and questions:
   - Autentikasi pengguna yang aman
   - Perlindungan integritas data
 
+### 🇮🇩 Integrasi Data Indonesia
+
+**Buku Warga** menyertakan paket **ID-Refs** khusus yang menyediakan referensi identitas warga Indonesia yang komprehensif:
+
+- **Data Wilayah**: Wilayah administratif Indonesia lengkap (Provinsi, Kabupaten, Kecamatan, Desa)
+- **Referensi Identitas**: Kode standar untuk jenis kelamin, agama, status perkawinan, golongan darah, pekerjaan
+- **Sinkronisasi Data**: Command built-in untuk memperbarui data wilayah dari sumber Kemendagri
+- **Validasi**: Validasi dan format NIK (16 digit)
+- **Lokalisasi**: Dukungan bahasa Indonesia lengkap
+
+Paket ID-Refs terintegrasi memastikan data komunitas Anda selaras dengan standar resmi Indonesia dan menyediakan pengelolaan informasi demografi yang akurat.
+
 ### 🛠 Teknologi
 
-- **Backend**: Laravel 10.x (PHP 8.1+)
-- **Panel Admin**: Filament 3.x
+- **Backend**: Laravel 11.x (PHP 8.3+)
+- **Panel Admin**: Filament 4.x
 - **Database**: MySQL/PostgreSQL
 - **Frontend**: Blade Templates dengan Livewire
 - **Styling**: Tailwind CSS
 - **Ikon**: Google Material Design Icons
+- **Referensi Indonesia**: Paket ID-Refs khusus untuk data identitas warga Indonesia
 
 ### 📋 Persyaratan Sistem
 
-- PHP 8.1 atau lebih tinggi
+- PHP 8.3 atau lebih tinggi
 - Composer 2.x
 - MySQL 8.0+ atau PostgreSQL 13+
+- Node.js 18+ dan npm
 - Web server (Apache/Nginx)
 
 ### 🚀 Instalasi
@@ -266,16 +300,21 @@ For support and questions:
    php artisan make:filament-user
    ```
 
-8. **Inisialisasi data komunitas**
+8. **Seed data referensi Indonesia (opsional)**
+   ```bash
+   php artisan idrefs:update-data
+   ```
+
+9. **Inisialisasi data komunitas**
    ```bash
    php artisan bukuwarga:init
    ```
 
-9. **Build asset dan jalankan server**
-   ```bash
-   npm run build
-   php artisan serve
-   ```
+10. **Build asset dan jalankan server**
+    ```bash
+    npm run build
+    php artisan serve
+    ```
 
 ### � Pemecahan Masalah
 
@@ -340,4 +379,3 @@ Untuk dukungan dan pertanyaan:
 *Dibuat dengan ❤️ untuk Komunitas Indonesia*
 
 </div>
-

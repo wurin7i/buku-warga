@@ -2,6 +2,7 @@
 
 namespace App\Enums\Concerns;
 
+use Throwable;
 use App\Enums\Comparable;
 
 trait Operations
@@ -11,7 +12,7 @@ trait Operations
         if (!$agains instanceof Comparable) {
             try {
                 $agains = self::tryFrom($agains);
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 $agains = null;
             }
         }

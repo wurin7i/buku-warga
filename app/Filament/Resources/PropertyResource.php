@@ -2,6 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PropertyResource\Pages\ListProperties;
+use App\Filament\Resources\PropertyResource\Pages\CreateProperty;
+use App\Filament\Resources\PropertyResource\Pages\EditProperty;
 use App\Enums\AreaAttributes\Level as AreaLevel;
 use App\Filament\Resources\PropertyResource\Pages;
 use App\Filament\Resources\PropertyResource\RelationManagers;
@@ -12,7 +19,6 @@ use App\Models\SubRegion;
 use App\Models\Property;
 use Filament\Forms;
 use Filament\Forms\Components as FormComponents;
-use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -27,7 +33,10 @@ class PropertyResource extends Resource
 {
     protected static ?string $model = Property::class;
 
-    protected static ?string $navigationIcon = 'gmdi-home-work-o';
+    public static function getNavigationIcon(): ?string
+    {
+        return 'gmdi-home-work-o';
+    }
 
     protected static ?string $recordTitleAttribute = 'label';
 
@@ -36,10 +45,10 @@ class PropertyResource extends Resource
         return __('property.resource_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 FormComponents\Select::make('sub_region_id')
                     ->label(__('property.Sub_Region'))
                     ->options(function () {
@@ -105,12 +114,12 @@ class PropertyResource extends Resource
                     ->relationship('cluster', 'name')
                     ->native(false),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -125,9 +134,9 @@ class PropertyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProperties::route('/'),
-            'create' => Pages\CreateProperty::route('/create'),
-            'edit' => Pages\EditProperty::route('/{record}/edit'),
+            'index' => ListProperties::route('/'),
+            'create' => CreateProperty::route('/create'),
+            'edit' => EditProperty::route('/{record}/edit'),
         ];
     }
 }

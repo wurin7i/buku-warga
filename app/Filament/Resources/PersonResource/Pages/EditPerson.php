@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PersonResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\PersonResource;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -20,14 +21,14 @@ class EditPerson extends EditRecord
                 ->label(__('person.Declare_Death'))
                 ->successRedirectUrl(PersonResource::getUrl())
                 ->successNotificationTitle('Deleted')
-                ->form([
+                ->schema([
                     DatePicker::make('death_date')
                         ->native(false)
                         ->required(),
                 ])
                 ->requiresConfirmation(true)
                 ->action(fn () => info($this->record->declareDeath())),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

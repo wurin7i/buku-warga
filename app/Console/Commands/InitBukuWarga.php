@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use App\Enums\SubRegionLevel;
 use App\Models\SubRegion;
 use App\Models\User;
@@ -69,9 +70,9 @@ class InitBukuWarga extends Command
                         $villageCount = Region::villageOnly()->count();
                         $this->info("Total villages now available: {$villageCount}");
                     } else {
-                        throw new \Exception('Command failed with exit code: ' . $exitCode);
+                        throw new Exception('Command failed with exit code: ' . $exitCode);
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error('Failed to populate region data: ' . $e->getMessage());
                     $this->error('Please run `php artisan idrefs:update-region --no-interaction` manually.');
                     die();

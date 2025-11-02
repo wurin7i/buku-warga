@@ -20,3 +20,5 @@ yarn-error.log
 composer.lock
 /public/css/filament
 /public/js/filament
+/public/fonts/filament
+buku-warga.code-workspace

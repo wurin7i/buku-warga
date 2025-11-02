@@ -39,6 +39,16 @@ class Area extends Model
         return $this->belongsTo(Region::class, 'organization_id', 'id');
     }
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(static::class, 'parent_id', 'id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(static::class, 'parent_id', 'id');
+    }
+
     public function scopeApplyType(Builder $builder, AreaType $type): void
     {
         $builder->where($this->qualifyColumn('type'), $type->value);

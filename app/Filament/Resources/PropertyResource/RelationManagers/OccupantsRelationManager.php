@@ -2,11 +2,21 @@
 
 namespace App\Filament\Resources\PropertyResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\AttachAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -15,18 +25,18 @@ class OccupantsRelationManager extends RelationManager
 {
     protected static string $relationship = 'occupants';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->columnSpanFull()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('moved_in_date')
+                DatePicker::make('moved_in_date')
                     ->native(false),
-                Forms\Components\Checkbox::make('is_resident'),
-                Forms\Components\Textarea::make('notes')
+                Checkbox::make('is_resident'),
+                Textarea::make('notes')
                     ->label(__('person.Notes'))
                     ->columnSpanFull(),
             ]);
@@ -37,8 +47,8 @@ class OccupantsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('moved_in_date')
+                TextColumn::make('name'),
+                TextColumn::make('moved_in_date')
                     ->date(),
             ])
             ->inverseRelationship('residents')
@@ -46,22 +56,22 @@ class OccupantsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label('Tambah Penghuni`'),
-                Tables\Actions\AttachAction::make()
-                    ->form(fn (AttachAction $action): array => [
+                AttachAction::make()
+                    ->schema(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
-                        Forms\Components\Checkbox::make('is_resident'),
+                        Checkbox::make('is_resident'),
                     ])
                     ->label('Pindahkan Ke Sini'),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DetachAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DetachAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use App\Enums\AreaType;
 use App\Enums\SubRegionLevel;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ use WuriN7i\IdRefs\Models\Region;
  *
  * @property-read Area $parent
  * @property SubRegionLevel $level
- * @property-read \Illuminate\Database\Eloquent\Collection $children
+ * @property-read Collection $children
  * @method static Builder applyLevel(int $level)
  * @method static Builder rwOnly()
  * @method static Builder rtOnly()
@@ -31,25 +32,35 @@ class SubRegion extends Area
     ];
 
     protected $fillable = [
-        'name', 'level',
+        'name',
+        'level',
+        'parent_id',
     ];
 
     protected static function booted(): void
     {
         static::creating(function (SubRegion $model) {
             $model->type = AreaType::SubRegion;
-            $model->level = $model->parent
-                ? $model->parent->level->value + 1
-                : SubRegionLevel::VILLAGE->value;
+
+            if ($model->parent_id) {
+                // Ambil parent dari database untuk mendapatkan level
+                $parent = static::withoutGlobalScopes()->find($model->parent_id);
+                $model->level = $parent ? $parent->level->value + 1 : SubRegionLevel::VILLAGE->value;
+            } else {
+                $model->level = SubRegionLevel::VILLAGE->value;
+            }
         });
 
         // todo: apply filtering by logged in user
-        static::addGlobalScope(fn (Builder $builder) => $builder->applyType(AreaType::SubRegion));
+        static::addGlobalScope('sub_region_type', function (Builder $builder) {
+            $builder->where($builder->getModel()->qualifyColumn('type'), AreaType::SubRegion->value);
+        });
     }
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(static::class, 'parent_id', 'id');
+        return $this->belongsTo(static::class, 'parent_id', 'id')
+            ->withoutGlobalScopes();
     }
 
     public function children(): HasMany
@@ -84,5 +95,14 @@ class SubRegion extends Area
         } else {
             $builder->where($this->qualifyColumn('parent_id'), $parent);
         }
+    }
+
+    public function getParentNameAttribute(): ?string
+    {
+        if ($this->relationLoaded('parent') && $this->parent) {
+            return $this->parent->name;
+        }
+
+        return $this->parent()->withoutGlobalScopes()->value('name');
     }
 }

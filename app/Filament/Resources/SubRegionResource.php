@@ -2,13 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\SubRegionResource\Pages\ListSubRegions;
+use App\Filament\Resources\SubRegionResource\Pages\CreateSubRegion;
+use App\Filament\Resources\SubRegionResource\Pages\EditSubRegion;
 use App\Filament\Resources\SubRegionResource\Pages;
 use App\Filament\Resources\SubRegionResource\RelationManagers;
 use App\Filament\Resources\SubRegionResource\RelationManagers\ChildrenRelationManager;
 use App\Models\SubRegion;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns as TableColumns;
 use Filament\Tables;
@@ -21,7 +27,10 @@ class SubRegionResource extends Resource
 {
     protected static ?string $model = SubRegion::class;
 
-    protected static ?string $navigationIcon = 'gmdi-account-tree-o';
+    public static function getNavigationIcon(): ?string
+    {
+        return 'gmdi-account-tree-o';
+    }
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -42,10 +51,10 @@ class SubRegionResource extends Resource
         return __('sub_region.resource_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 FormComponents\TextInput::make('name')
                     ->label(__('sub_region.Name'))
                     ->required()
@@ -56,7 +65,11 @@ class SubRegionResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload()
-                    ->relationship(name: 'parent', titleAttribute: 'name')
+                    ->relationship(
+                        name: 'parent',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn(Builder $query) => $query->withoutGlobalScopes()
+                    )
                     ->disabledOn('edit')
                     ->native(false),
             ])->columns(3);
@@ -65,27 +78,40 @@ class SubRegionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->with(['parent' => function ($query) {
+                    $query->withoutGlobalScopes();
+                }]);
+            })
             ->columns([
                 TableColumns\TextColumn::make('name')
                     ->label(__('sub_region.Name'))
-                    ->searchable('areas.name'),
+                    ->searchable(),
+                TableColumns\TextColumn::make('parent_name')
+                    ->label(__('sub_region.Parent'))
+                    ->sortable(false)
+                    ->searchable(false),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('parent_id')
+                    ->label(__('sub_region.Parent'))
+                    ->relationship('parent', 'name', fn(Builder $query) => $query->withoutGlobalScopes())
+                    ->searchable()
+                    ->preload(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
-            ])->groups([
-                Group::make('parent.name')
-                    ->titlePrefixedWithLabel(false),
             ])
-            ->defaultGroup('parent.name')
-            ->groupingSettingsHidden();
+            ->groups([
+                Group::make('parent_name')
+                    ->label('Parent')
+                    ->titlePrefixedWithLabel(false),
+            ]);
     }
 
     public static function getRelations(): array
@@ -98,9 +124,9 @@ class SubRegionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSubRegions::route('/'),
-            'create' => Pages\CreateSubRegion::route('/create'),
-            'edit' => Pages\EditSubRegion::route('/{record}/edit'),
+            'index' => ListSubRegions::route('/'),
+            'create' => CreateSubRegion::route('/create'),
+            'edit' => EditSubRegion::route('/{record}/edit'),
         ];
     }
 }

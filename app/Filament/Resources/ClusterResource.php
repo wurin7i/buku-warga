@@ -2,13 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\ClusterResource\Pages\ListClusters;
+use App\Filament\Resources\ClusterResource\Pages\CreateCluster;
+use App\Filament\Resources\ClusterResource\Pages\EditCluster;
 use App\Filament\Resources\ClusterResource\Pages;
 use App\Filament\Resources\ClusterResource\RelationManagers;
 use App\Filament\Resources\ClusterResource\RelationManagers\PropertiesRelationManager;
 use App\Models\Cluster;
 use Filament\Forms\Components as FormComponents;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns as TableColumns;
 use Filament\Tables;
@@ -20,7 +26,10 @@ class ClusterResource extends Resource
 {
     protected static ?string $model = Cluster::class;
 
-    protected static ?string $navigationIcon = 'gmdi-domain';
+    public static function getNavigationIcon(): ?string
+    {
+        return 'gmdi-domain';
+    }
 
     protected static ?int $navigationSort = 2;
 
@@ -39,10 +48,10 @@ class ClusterResource extends Resource
         return __('cluster.resource_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 FormComponents\TextInput::make('name')
                     ->label(__('cluster.Name'))
                     ->columnSpan(2),
@@ -65,12 +74,12 @@ class ClusterResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -85,9 +94,9 @@ class ClusterResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListClusters::route('/'),
-            'create' => Pages\CreateCluster::route('/create'),
-            'edit' => Pages\EditCluster::route('/{record}/edit'),
+            'index' => ListClusters::route('/'),
+            'create' => CreateCluster::route('/create'),
+            'edit' => EditCluster::route('/{record}/edit'),
         ];
     }
 }

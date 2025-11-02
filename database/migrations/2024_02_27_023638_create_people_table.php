@@ -17,7 +17,7 @@ return new class extends Migration
             $table->char('nik', 16)->nullable()->index();
             $table->char('kk_number', 16)->nullable()->index();
             $table->string('name')->index();
-            $table->reference(ReferenceType::Gender);
+            $table->identityAttribute(ReferenceType::Gender);
             $table->string('birth_place')->nullable();
             $table->date('birth_date')->nullable();
             $table->boolean('is_deceased')->default(false);
@@ -25,11 +25,11 @@ return new class extends Migration
             $table->char('sub_region', 7)->nullable()->comment('RT-RW in XXX/YYY format');
             $table->foreignId('region_id')->nullable()
                 ->constrained('ref_regions');
-            $table->reference(ReferenceType::Religion);
-            $table->reference(ReferenceType::Marital);
-            $table->reference(ReferenceType::Occupation);
-            $table->reference(ReferenceType::BloodType);
-            $table->reference(ReferenceType::Citizenship);
+            $table->identityAttribute(ReferenceType::Religion);
+            $table->identityAttribute(ReferenceType::Marital);
+            $table->identityAttribute(ReferenceType::Occupation);
+            $table->identityAttribute(ReferenceType::BloodType);
+            $table->identityAttribute(ReferenceType::Citizenship);
             $table->foreignId('creator_id')->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
