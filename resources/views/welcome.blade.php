@@ -41,7 +41,7 @@
 
             <div class="max-w-7xl mx-auto p-6 lg:p-8">
                 <div class="flex justify-center">
-                    <img src="{{ asset('theme/images/bukuwarga.svg') }}" style="width: 300px; max-width: 50vw;" alt="bukuwarga">
+                    <img src="{{ asset('images/bukuwarga.svg') }}" style="width: 300px; max-width: 50vw;" alt="bukuwarga">
                 </div>
 
                 <div class="flex justify-center mt-16 px-0 sm:items-center sm:justify-between">
@@ -50,7 +50,8 @@
                     </div>
 
                     <div class="text-center text-sm text-gray-500 dark:text-gray-400 sm:text-center sm:ml-0">
-                        Laravel v{{ Illuminate\Foundation\Application::VERSION }}
+                        &copy; 2024 Buku Warga. All rights reserved.
+                        <span class="ml-2">— <a href="https://github.com/wurin7i/buku-warga" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-900 dark:hover:text-white">GitHub repo</a></span>
                     </div>
                 </div>
             </div>

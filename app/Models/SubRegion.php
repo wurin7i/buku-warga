@@ -38,7 +38,9 @@ class SubRegion extends Area
     {
         static::creating(function (SubRegion $model) {
             $model->type = AreaType::SubRegion;
-            $model->level = ($model->parent?->level ?? SubRegionLevel::VILLAGE)->value + 1;
+            $model->level = $model->parent
+                ? $model->parent->level->value + 1
+                : SubRegionLevel::VILLAGE->value;
         });
 
         // todo: apply filtering by logged in user
