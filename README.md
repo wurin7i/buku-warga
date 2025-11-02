@@ -118,7 +118,32 @@
    php artisan serve
    ```
 
-### 📖 Usage
+### � Troubleshooting
+
+#### Filament Admin Panel Not Loading Properly
+
+If the Filament admin panel appears broken or unstyled after installation or git operations, this is likely due to missing Filament assets. Follow these steps:
+
+1. **Regenerate Filament assets**
+   ```bash
+   php artisan filament:assets
+   ```
+
+2. **Clear application cache**
+   ```bash
+   php artisan optimize:clear
+   ```
+
+3. **Optimize the application**
+   ```bash
+   php artisan optimize
+   ```
+
+4. **Refresh your browser** and clear browser cache if necessary
+
+> **Note**: Filament assets are not tracked in Git (added to `.gitignore`) to prevent conflicts. They need to be regenerated after fresh installations or when switching between branches.
+
+### �📖 Usage
 
 1. **Access the application** at `http://localhost:8000`
 2. **Login** with your admin credentials
@@ -252,7 +277,32 @@ For support and questions:
    php artisan serve
    ```
 
-### 📖 Penggunaan
+### � Pemecahan Masalah
+
+#### Panel Admin Filament Tidak Muncul dengan Benar
+
+Jika panel admin Filament terlihat rusak atau tidak bergaya setelah instalasi atau operasi git, kemungkinan disebabkan oleh asset Filament yang hilang. Ikuti langkah-langkah berikut:
+
+1. **Regenerasi asset Filament**
+   ```bash
+   php artisan filament:assets
+   ```
+
+2. **Bersihkan cache aplikasi**
+   ```bash
+   php artisan optimize:clear
+   ```
+
+3. **Optimasi aplikasi**
+   ```bash
+   php artisan optimize
+   ```
+
+4. **Refresh browser** dan bersihkan cache browser jika diperlukan
+
+> **Catatan**: Asset Filament tidak dilacak di Git (ditambahkan ke `.gitignore`) untuk mencegah konflik. Asset perlu di-regenerasi setelah instalasi baru atau saat berpindah antar branch.
+
+### �📖 Penggunaan
 
 1. **Akses aplikasi** di `http://localhost:8000`
 2. **Login** dengan kredensial admin Anda
