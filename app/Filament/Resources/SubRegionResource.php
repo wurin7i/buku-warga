@@ -2,26 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\SubRegionResource\Pages\ListSubRegions;
 use App\Filament\Resources\SubRegionResource\Pages\CreateSubRegion;
 use App\Filament\Resources\SubRegionResource\Pages\EditSubRegion;
-use App\Filament\Resources\SubRegionResource\Pages;
-use App\Filament\Resources\SubRegionResource\RelationManagers;
+use App\Filament\Resources\SubRegionResource\Pages\ListSubRegions;
 use App\Filament\Resources\SubRegionResource\RelationManagers\ChildrenRelationManager;
 use App\Models\SubRegion;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components as FormComponents;
-use Filament\Forms;
 use Filament\Resources\Resource;
-use Filament\Tables\Columns as TableColumns;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns as TableColumns;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SubRegionResource extends Resource
 {
@@ -68,7 +64,7 @@ class SubRegionResource extends Resource
                     ->relationship(
                         name: 'parent',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn(Builder $query) => $query->withoutGlobalScopes()
+                        modifyQueryUsing: fn (Builder $query) => $query->withoutGlobalScopes()
                     )
                     ->disabledOn('edit')
                     ->native(false),
@@ -95,7 +91,7 @@ class SubRegionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('parent_id')
                     ->label(__('sub_region.Parent'))
-                    ->relationship('parent', 'name', fn(Builder $query) => $query->withoutGlobalScopes())
+                    ->relationship('parent', 'name', fn (Builder $query) => $query->withoutGlobalScopes())
                     ->searchable()
                     ->preload(),
             ])

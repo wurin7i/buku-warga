@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\BloodType;
+use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\Gender;
 use WuriN7i\IdRefs\Models\Marital;
 use WuriN7i\IdRefs\Models\Occupation;
@@ -19,6 +19,7 @@ use WuriN7i\IdRefs\Models\Religion;
 
 /**
  * @property Occupant $occupy
+ *
  * @method static applyIsResident(bool $occupying = true)
  * @method static applyIsDeceased(bool $deceased = true)
  * @method static applyIsAlive(bool $alive = true)
@@ -104,7 +105,7 @@ class Person extends Model
 
     public function scopeApplyIsAlive(Builder $builder, bool $value = true): void
     {
-        $this->scopeApplyIsDeceased($builder, !$value);
+        $this->scopeApplyIsDeceased($builder, ! $value);
     }
 
     public function scopeApplyIsResident(Builder $builder, bool $value = true): void
@@ -116,7 +117,7 @@ class Person extends Model
     {
         $occupy = $this->occupy;
 
-        return $occupy && !$occupy->has_moved_out;
+        return $occupy && ! $occupy->has_moved_out;
     }
 
     public function declareDeath(?DateTime $deathDate = null, bool $persist = true): self

@@ -45,7 +45,7 @@ class Property extends Model
         return $this->belongsTo(Cluster::class, 'cluster_id', 'id');
     }
 
-    public function scopeBuildingOnly(Builder $builder, bool $bool = true) : Builder
+    public function scopeBuildingOnly(Builder $builder, bool $bool = true): Builder
     {
         return $builder->where($this->qualifyColumn('has_building'), $bool);
     }

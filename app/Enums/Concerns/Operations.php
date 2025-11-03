@@ -2,14 +2,14 @@
 
 namespace App\Enums\Concerns;
 
-use Throwable;
 use App\Enums\Comparable;
+use Throwable;
 
 trait Operations
 {
     public function is($agains): bool
     {
-        if (!$agains instanceof Comparable) {
+        if (! $agains instanceof Comparable) {
             try {
                 $agains = self::tryFrom($agains);
             } catch (Throwable $th) {

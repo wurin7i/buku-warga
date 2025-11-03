@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\ClusterResource\Pages;
 
-use Filament\Actions\CreateAction;
 use App\Filament\Resources\ClusterResource;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListClusters extends ListRecords

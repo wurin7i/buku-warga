@@ -2,25 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\ClusterResource\Pages\ListClusters;
 use App\Filament\Resources\ClusterResource\Pages\CreateCluster;
 use App\Filament\Resources\ClusterResource\Pages\EditCluster;
-use App\Filament\Resources\ClusterResource\Pages;
-use App\Filament\Resources\ClusterResource\RelationManagers;
+use App\Filament\Resources\ClusterResource\Pages\ListClusters;
 use App\Filament\Resources\ClusterResource\RelationManagers\PropertiesRelationManager;
 use App\Models\Cluster;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components as FormComponents;
-use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns as TableColumns;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ClusterResource extends Resource
 {
@@ -87,7 +81,7 @@ class ClusterResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PropertiesRelationManager::class
+            PropertiesRelationManager::class,
         ];
     }
 

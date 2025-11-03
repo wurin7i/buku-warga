@@ -15,6 +15,7 @@ use WuriN7i\IdRefs\Models\Region;
  * @property string $name
  * @property Type $type
  * @property Level $level
+ *
  * @method static Builder applyType(AreaType $type)
  */
 class Area extends Model

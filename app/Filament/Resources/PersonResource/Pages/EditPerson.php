@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources\PersonResource\Pages;
 
-use Filament\Actions\DeleteAction;
 use App\Filament\Resources\PersonResource;
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\EditRecord;
 

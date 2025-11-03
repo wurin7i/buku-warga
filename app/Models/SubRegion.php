@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
 use App\Enums\AreaType;
 use App\Enums\SubRegionLevel;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use WuriN7i\IdRefs\Models\Region;
 
 /**
@@ -19,6 +16,7 @@ use WuriN7i\IdRefs\Models\Region;
  * @property-read Area $parent
  * @property SubRegionLevel $level
  * @property-read Collection $children
+ *
  * @method static Builder applyLevel(int $level)
  * @method static Builder rwOnly()
  * @method static Builder rtOnly()
