@@ -37,12 +37,12 @@ class PropertiesRelationManager extends RelationManager
                     ->relationship(
                         name: 'subRegion',
                         titleAttribute: 'name',
-                        modifyQueryUsing: function (SubRegion $q) {
+                        modifyQueryUsing: function (Builder $query) {
                             /** @var SubRegion */
                             $baseArea = $this->getOwnerRecord()->baseArea;
                             return $baseArea->level->is(SubRegionLevel::RT)
-                                ? $q->whereKey($baseArea->id)
-                                : $q->applyParent($baseArea);
+                                ? $query->whereKey($baseArea->id)
+                                : $query->applyParent($baseArea);
                         }
                     ),
             ]);
