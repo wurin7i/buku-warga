@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Core\Contracts\PersonServiceInterface;
+use App\Core\Helpers\NIKHelper;
 use App\Filament\Resources\PersonResource\Pages\CreatePerson;
 use App\Filament\Resources\PersonResource\Pages\EditPerson;
 use App\Filament\Resources\PersonResource\Pages\ListPeople;
@@ -28,7 +30,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use WuriN7i\IdRefs\Enums\Citizenship as EnumsCitizenship;
-use WuriN7i\IdRefs\Enums\Gender as EnumsGender;
 use WuriN7i\IdRefs\Enums\Religion as EnumsReligion;
 use WuriN7i\IdRefs\Models\Citizenship;
 use WuriN7i\IdRefs\Models\Gender;
@@ -63,21 +64,14 @@ class PersonResource extends Resource
                     ->rules('digits:16')
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        if (preg_match('/^\d{6}(\d{6})\d{4}$/', $state ?? '', $matches)) {
-                            if (($dateNumber = floatval($matches[1])) > 400000) {
-                                $sex = EnumsGender::Female;
-                                $dateNumber -= 400000;
-                            } else {
-                                $sex = EnumsGender::Male;
-                            }
-
-                            $birthDate = Carbon::createFromFormat('dmy', str_pad($dateNumber, 6, '0', STR_PAD_LEFT));
-                            if ($birthDate->startOfDay()->gt(today())) {
-                                $birthDate->subYears(100);
-                            }
+                        if (NIKHelper::isValid($state)) {
+                            $gender = NIKHelper::extractGender($state);
+                            $birthDate = NIKHelper::extractBirthDate($state);
 
                             $set('birth_date', $birthDate);
-                            $set('gender', Gender::fromEnum($sex)->getKey());
+                            if ($gender) {
+                                $set('gender', Gender::fromEnum($gender)->getKey());
+                            }
                         }
                     }),
                 FormComponents\TextInput::make('name')
@@ -114,20 +108,20 @@ class PersonResource extends Resource
                     ->relationship(
                         'region',
                         'name',
-                        fn (Builder $query) => $query->villageOnly()
+                        fn(Builder $query) => $query->villageOnly()
                             ->with(['parent', 'parent.parent'])
                             ->join('ref_regions as p', 'p.id', '=', 'ref_regions.parent_id')
                             ->select('ref_regions.*')
                     )
                     ->getOptionLabelFromRecordUsing(
-                        fn (Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
+                        fn(Region $r) => "{$r->name}, {$r->parent->name}, {$r->parent->parent->name}"
                     )
                     ->searchable(['ref_regions.name', "concat_ws(' ', `ref_regions`.`name`, `p`.`name`)"])
                     ->native(false)
                     ->columnSpan(2),
                 FormComponents\Select::make('religion')
                     ->label(__('person.Religion'))
-                    ->relationship('religion', 'label', fn (Builder $query) => $query->orderBy('sort_order'))
+                    ->relationship('religion', 'label', fn(Builder $query) => $query->orderBy('sort_order'))
                     ->default(Religion::fromEnum(EnumsReligion::Islam)->getKey())
                     ->native(false),
                 FormComponents\Select::make('marital')
@@ -175,7 +169,7 @@ class PersonResource extends Resource
                                                 ->native(false)
                                                 ->required(),
                                         ])
-                                        ->fillForm(fn () => [
+                                        ->fillForm(fn() => [
                                             'moved_out_date' => now(),
                                         ])
                                         ->action(function (array $data, $record, Set $set) {
@@ -200,9 +194,9 @@ class PersonResource extends Resource
                                         FormComponents\Select::make('building_id')
                                             ->label(__('person.Building'))
                                             ->options(
-                                                fn () => Property::with('cluster')->buildingOnly()->get()
+                                                fn() => Property::with('cluster')->buildingOnly()->get()
                                                     ->groupBy('cluster.name')
-                                                    ->transform(fn ($rows) => $rows->pluck('label', 'id'))
+                                                    ->transform(fn($rows) => $rows->pluck('label', 'id'))
                                             )
                                             ->required()
                                             ->searchable()
@@ -211,17 +205,17 @@ class PersonResource extends Resource
                                             ->live(),
                                         FormComponents\DatePicker::make('moved_in_date')
                                             ->label(__('person.Date_of_Move_In'))
-                                            ->disabled(fn (Get $get) => ! $get('building_id'))
+                                            ->disabled(fn(Get $get) => ! $get('building_id'))
                                             ->displayFormat('d/m/Y')
                                             ->placeholder('hh/bb/tttt')
                                             ->beforeOrEqual('today')
                                             ->native(false),
                                         FormComponents\Checkbox::make('is_resident')
                                             ->label(__('person.Is_Resident'))
-                                            ->disabled(fn (Get $get) => ! $get('building_id')),
+                                            ->disabled(fn(Get $get) => ! $get('building_id')),
                                     ])
                                     ->columns(3)
-                                    ->hidden(fn (Get $get) => ! $get('is_occupying'))
+                                    ->hidden(fn(Get $get) => ! $get('is_occupying'))
                                     ->key('occupyFields'),
                             ])
                             ->columns(2),
@@ -253,7 +247,7 @@ class PersonResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['occupy.building']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['occupy.building']))
             ->columns([
                 TableColumns\TextColumn::make('name')
                     ->label(__('person.Name'))

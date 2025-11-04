@@ -16,7 +16,9 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
         "sentry/sentry-laravel": "^4.10",
+        "spatie/laravel-data": "^4.18",
         "spatie/laravel-permission": "^6.9",
+        "stancl/tenancy": "^3.9",
         "wikimedia/composer-merge-plugin": "^2.1",
         "wurin7i/id-refs": "^0.3"
     },
@@ -63,11 +65,7 @@
         "laravel": {
             "dont-discover": []
         },
-        "merge-plugin": {
-            "include": [
-                "packages/*/composer.json"
-            ]
-        }
+        "merge-plugin": {}
     },
     "config": {
         "optimize-autoloader": true,

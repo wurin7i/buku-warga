@@ -2,15 +2,29 @@
 
 namespace App\Filament\Resources\PersonResource\Pages;
 
+use App\Core\Contracts\PersonServiceInterface;
+use App\Core\Data\Person\UpdatePersonData;
 use App\Filament\Resources\PersonResource;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditPerson extends EditRecord
 {
     protected static string $resource = PersonResource::class;
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $personService = app(PersonServiceInterface::class);
+
+        $updatePersonData = UpdatePersonData::from($data);
+
+        $personService->update($record->id, $updatePersonData);
+
+        return $record->fresh();
+    }
 
     protected function getHeaderActions(): array
     {
@@ -26,7 +40,7 @@ class EditPerson extends EditRecord
                         ->required(),
                 ])
                 ->requiresConfirmation(true)
-                ->action(fn () => info($this->record->declareDeath())),
+                ->action(fn() => info($this->record->declareDeath())),
             DeleteAction::make(),
         ];
     }

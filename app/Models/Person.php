@@ -40,6 +40,11 @@ class Person extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'birth_date' => 'datetime',
+        'is_deceased' => 'boolean',
+    ];
+
     /**
      * The "booted" method of the model.
      */
@@ -59,7 +64,7 @@ class Person extends Model
         return $this->hasOne(Occupant::class, 'person_id')
             ->ofMany(
                 ['id' => 'MAX'],
-                fn (Builder $q) => $q->occupyingOnly()
+                fn(Builder $q) => $q->occupyingOnly()
             );
     }
 
