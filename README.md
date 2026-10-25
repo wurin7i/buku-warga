@@ -2,8 +2,8 @@
 
 <div align="center">
 
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![Filament](https://img.shields.io/badge/Filament-4.x-F59E0B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K&logoColor=white)](https://filamentphp.com)
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Filament](https://img.shields.io/badge/Filament-5.x-F59E0B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K&logoColor=white)](https://filamentphp.com)
 [![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-0.1-blue?style=for-the-badge)](https://github.com/wurin7i/buku-warga/releases)
@@ -61,8 +61,8 @@ The integrated ID-Refs package ensures your community data aligns with official 
 
 ### 🛠 Tech Stack
 
-- **Backend**: Laravel 11.x (PHP 8.3+)
-- **Admin Panel**: Filament 4.x
+- **Backend**: Laravel 13.x (PHP 8.3+)
+- **Admin Panel**: Filament 5.x
 - **Database**: MySQL/PostgreSQL
 - **Frontend**: Blade Templates with Livewire
 - **Styling**: Tailwind CSS
@@ -239,8 +239,8 @@ Paket ID-Refs terintegrasi memastikan data komunitas Anda selaras dengan standar
 
 ### 🛠 Teknologi
 
-- **Backend**: Laravel 11.x (PHP 8.3+)
-- **Panel Admin**: Filament 4.x
+- **Backend**: Laravel 13.x (PHP 8.3+)
+- **Panel Admin**: Filament 5.x
 - **Database**: MySQL/PostgreSQL
 - **Frontend**: Blade Templates dengan Livewire
 - **Styling**: Tailwind CSS
